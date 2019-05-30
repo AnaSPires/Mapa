@@ -3,32 +3,37 @@ using System.IO;
 
 class Cidade : IComparable<Cidade>  
 {
-    const int tamanhoMatricula = 5;
-    const int tamanhoNome = 30;
-    const int tamanhoSalario = 10;
+    const int tamanhoCod = 2;
+    const int tamanhoNome = 15;
+    const int tamanhoX = 4;
+    const int tamanhoY = 4;
     
-    const int inicioMatricula = 0;
-    const int inicioNome = inicioMatricula + tamanhoMatricula;
-    const int inicioSalario = inicioNome + tamanhoNome;
+    const int inicioCod = 1;
+    const int inicioNome = inicioCod + tamanhoCod;
+    const int inicioX = inicioNome + tamanhoNome +1;
+    const int inicioY = inicioX + tamanhoY +1;
 
-    public int matricula;
+    public int cod;
     public string nome;
-    public double salario;
+    public int x;
+    public int y;
     public Cidade()
     {
-      matricula = 0;
+      cod = 0;
       nome = "";
-      salario = 0;
+      x = 0;
+      y = 0;
     }
     public Cidade(string linha)
     {
-       matricula = int.Parse(linha.Substring(inicioMattricula, tamanhoMatricula));
+       cod = int.Parse(linha.Substring(inicioCod, tamanhoCod));
        nome = linha.Substring(inicioNome, tamanhoNome);
-       salario = double.Parse(linha.Substring(inicioSalario, tamanhoSalario));
+       x = int.Parse(linha.Substring(inicioX, tamanhoX));
+       y = int.Parse(linha.Substring(inicioY, tamanhoY));
     }
-    public int CompareTo(Cidade outroFunc)
+    public int CompareTo(Cidade outraCid)
     {
-       return matricula - outroFunc.matricula;
+       return cod - outraCid.cod;
     }
 }
 

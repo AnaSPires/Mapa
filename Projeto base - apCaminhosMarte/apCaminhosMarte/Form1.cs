@@ -75,52 +75,75 @@ namespace apCaminhosMarte
                     caminhos.Empilhar(um);
             }
 
-            //converterrrr
-            PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
-            while (!caminhos.EstaVazia())
-            {
-                aux2.Empilhar(caminhos.Desempilhar());
-            }
+            string[] cidades = new string[caminhos.Tamanho()];
+            int cont = 0;
 
-            //Exibir
-            
-            int qtdCidades = 0;
-
-            if (aux2.EstaVazia())
+            if (caminhos.EstaVazia())
                 MessageBox.Show("Não existe nenhum caminho disponível!");
             else
-                while(qtdCidades < aux2.Tamanho())
+            {
+                while (!caminhos.EstaVazia())
                 {
-                    Caminho caminho = aux2.Desempilhar();
+                    Caminho caminho = caminhos.Desempilhar();
 
                     DataGridViewColumn d = new DataGridViewColumn();
-                    d.HeaderText = caminho.Destino.ToString();
+                    d.HeaderText = "Cidade";
                     dataGridView1.Columns.Add(d);
 
-                    DataGridViewRow n = new DataGridViewRow();
-                    n.HeaderCell.Value = caminho.Origem.ToString();
-                    dataGridView1.Rows.Add(n);
-                    
-
-                    qtdCidades++;
+                    Cidade cid = arvore.BuscaPorDado(new Cidade(caminho.Destino));
+                    cidades[cont] = cid.Nome;
+                    cont++;
                 }
-
-            //exibir preço da viagem
-
-            StreamReader arq = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);
-
-            while (!arq.EndOfStream)
-            {
-                string linha = arq.ReadLine();
-
-                int origem = Convert.ToInt32(linha.Substring(0, 3));
-                int destino = Convert.ToInt32(linha.Substring(3, 3));
-
-                matriz[origem, destino] = Convert.ToInt32(linha.Substring(6, 5));
-                //matriz[l, 0] = Convert.ToInt32(linha.Substring(6, 5));      
+                dataGridView1.Rows.Add(cidades);
             }
+               
 
-            arq.Close();
+            ////converterrrr
+            //PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
+            //while (!caminhos.EstaVazia())
+            //{
+            //    aux2.Empilhar(caminhos.Desempilhar());
+            //}
+
+            ////Exibir
+
+            //int qtdCidades = 0;
+
+            //if (aux2.EstaVazia())
+            //    MessageBox.Show("Não existe nenhum caminho disponível!");
+            //else
+            //    while(qtdCidades < aux2.Tamanho())
+            //    {
+            //        Caminho caminho = aux2.Desempilhar();
+
+            //        DataGridViewColumn d = new DataGridViewColumn();
+            //        d.HeaderText = caminho.Destino.ToString();
+            //        dataGridView1.Columns.Add(d);
+
+            //        DataGridViewRow n = new DataGridViewRow();
+            //        n.HeaderCell.Value = caminho.Origem.ToString();
+            //        dataGridView1.Rows.Add(n);
+
+
+            //        qtdCidades++;
+            //    }
+
+            ////exibir preço da viagem
+
+            //StreamReader arq = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);
+
+            //while (!arq.EndOfStream)
+            //{
+            //    string linha = arq.ReadLine();
+
+            //    int origem = Convert.ToInt32(linha.Substring(0, 3));
+            //    int destino = Convert.ToInt32(linha.Substring(3, 3));
+
+            //    matriz[origem, destino] = Convert.ToInt32(linha.Substring(6, 5));
+            //    //matriz[l, 0] = Convert.ToInt32(linha.Substring(6, 5));      
+            //}
+
+            //arq.Close();
 
 
             //while(!caminhos.EstaVazia())
@@ -329,6 +352,5 @@ namespace apCaminhosMarte
                 g.DrawString(Convert.ToString(raiz.Info.Nome), new Font("Comic Sans", 12), new SolidBrush(Color.Black), xf - 35, yf + 10);
             }
         }
-        
     }
 }

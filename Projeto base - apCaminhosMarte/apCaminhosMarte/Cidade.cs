@@ -39,6 +39,10 @@ class Cidade : IComparable<Cidade>
         this.x = x;
         this.y = y;
     }
+    public Cidade(int cod)
+    {
+        this.cod = cod;
+    }
 
     public int Cod { get => cod;  }
     public string Nome { get => nome;  }

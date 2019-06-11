@@ -47,6 +47,28 @@ namespace apCaminhosMarte
       return false; // Se atual == null, a chave não existe mas antecessor aponta o pai 
     }
 
+        public Dado BuscaPorDado(Dado procurado)
+        {
+            antecessor = null;
+            atual = Raiz;
+            Dado dado = atual.Info;
+
+            while (atual != null)
+            {
+                if (atual.Info.CompareTo(procurado) == 0)
+                    return dado;
+                else
+                {
+                    antecessor = atual;
+                    if (procurado.CompareTo(atual.Info) < 0)
+                        atual = atual.Esq; // Desloca à esquerda
+                    else
+                        atual = atual.Dir; // Desloca à direita
+                }
+            }
+            return dado;
+        }
+        
     public void Incluir(Dado incluido)    // inclusão usando o método de pesquisa binária
     {
       if (Existe(incluido))

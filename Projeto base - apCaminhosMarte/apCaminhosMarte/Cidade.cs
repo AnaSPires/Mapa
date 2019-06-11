@@ -13,10 +13,10 @@ class Cidade : IComparable<Cidade>
     const int inicioX = inicioNome + tamanhoNome +1;
     const int inicioY = inicioX + tamanhoY +1;
 
-    public int cod;
-    public string nome;
-    public int x;
-    public int y;
+     int cod;
+     string nome;
+     int x;
+     int y;
     public Cidade()
     {
       cod = 0;
@@ -31,9 +31,25 @@ class Cidade : IComparable<Cidade>
        x = int.Parse(linha.Substring(inicioX, tamanhoX));
        y = int.Parse(linha.Substring(inicioY, tamanhoY));
     }
+
+    public Cidade(int cod, string nome, int x, int y)
+    {
+        this.cod = cod;
+        this.nome = nome;
+        this.x = x;
+        this.y = y;
+    }
+
+    public int Cod { get => cod;  }
+    public string Nome { get => nome;  }
+    public int X { get => x;}
+    public int Y { get => y;  }
+
     public int CompareTo(Cidade outraCid)
     {
        return cod - outraCid.cod;
     }
+
+   
 }
 

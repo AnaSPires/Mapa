@@ -38,16 +38,18 @@ namespace apCaminhosMarte
             bool acabouCaminho = false;
             bool[] visitados = new bool[arvore.QuantosDados];
             bool[] saidas = new bool[arvore.QuantosDados]; //quem leva para o destino
+            int qtdCaminhos = 0;
+            
 
-            while(!acabouCaminho)
+            while (!acabouCaminho)
             {
                 for (int c = 0; c < arvore.QuantosDados; c++)
                 {
                     if (matriz[atual, c] != default(int) && !visitados[c])
-                        aux.Empilhar(new Caminho(atual, c));
+                        aux.Empilhar(new Caminho(atual, c, matriz[atual, c], 0));
                 }
 
-                if(aux.EstaVazia())
+                if (aux.EstaVazia())
                     acabouCaminho = true;
                 else
                 {
@@ -75,26 +77,49 @@ namespace apCaminhosMarte
                     caminhos.Empilhar(um);
             }
 
-            string[] cidades = new string[caminhos.Tamanho()];
-            int cont = 0;
-
+            
+            
             if (caminhos.EstaVazia())
                 MessageBox.Show("Não existe nenhum caminho disponível!");
             else
             {
+
                 while (!caminhos.EstaVazia())
                 {
-                    Caminho caminho = caminhos.Desempilhar();
-
+                    //Caminho caminho = caminhos.Desempilhar();
                     DataGridViewColumn d = new DataGridViewColumn();
                     d.HeaderText = "Cidade";
                     dataGridView1.Columns.Add(d);
-
+                    int destino = lsbDestino.SelectedIndex;
+                    string[] nomes = new string[caminhos.Tamanho()];
+                    int qtd = 0;
+                    Caminho caminho = caminhos.Desempilhar();
+                    while (!caminhos.EstaVazia()) // while (caminho.Origem != lsbOrigem.SelectedIndex && !caminhos.EstaVazia())
+                    {
+                        caminho = caminhos.Desempilhar();
+                        if (caminho.Destino == destino && caminho.Origem != lsbOrigem.SelectedIndex)
+                        {
+                            destino = caminho.Origem;
+                            Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
+                            nomes[qtd] = c.Nome;
+                            //dataGridView1.Rows.Add();
+                            //dataGridView1.Rows[1].Cells[1].Value = c.Nome;
+                            qtd++;
+                        }
+                    }
                     Cidade cid = arvore.BuscaPorDado(new Cidade(caminho.Destino));
-                    cidades[cont] = cid.Nome;
-                    cont++;
+                    
+                    dataGridView1.Rows.Add("oi");
+
+                    while (caminho.QtdCaminhos != 0 && !caminhos.EstaVazia())
+                    {
+                        Caminho ca = caminhos.Desempilhar();
+                        cid = arvore.BuscaPorDado(new Cidade(caminho.Destino));
+                        dataGridView1.Rows.Add(cid.Nome);
+                        caminho.QtdCaminhos--;
+
+                    }
                 }
-                dataGridView1.Rows.Add(cidades);
             }
                
 

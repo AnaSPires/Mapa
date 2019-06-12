@@ -56,7 +56,10 @@ namespace apCaminhosMarte
             while (atual != null)
             {
                 if (atual.Info.CompareTo(procurado) == 0)
+                {
+                    dado = atual.Info;
                     return dado;
+                }
                 else
                 {
                     antecessor = atual;

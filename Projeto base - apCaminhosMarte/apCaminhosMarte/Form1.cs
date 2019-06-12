@@ -89,7 +89,8 @@ namespace apCaminhosMarte
                     //Caminho caminho = caminhos.Desempilhar();
                     DataGridViewColumn d = new DataGridViewColumn();
                     d.HeaderText = "Cidade";
-                    dataGridView1.Columns.Add(d);
+                    d.Width = 200;
+                    dataGridView1.Columns.Insert(0,d);
                     int destino = lsbDestino.SelectedIndex;
                     string[] nomes = new string[caminhos.Tamanho()];
                     int qtd = 0;
@@ -108,8 +109,8 @@ namespace apCaminhosMarte
                         }
                     }
                     Cidade cid = arvore.BuscaPorDado(new Cidade(caminho.Destino));
-                    
-                    dataGridView1.Rows.Add("oi");
+                    for(int i = 0; i < qtd; i++)
+                        dataGridView1.Rows.Add();
 
                     while (caminho.QtdCaminhos != 0 && !caminhos.EstaVazia())
                     {

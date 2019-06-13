@@ -15,6 +15,9 @@ namespace apCaminhosMarte
     {
         Arvore<Cidade> arvore;
         int[,] matriz;
+        object[] vetorCaminhos;
+        int lClick = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -28,18 +31,21 @@ namespace apCaminhosMarte
 
         private void BtnBuscar_Click(object sender, EventArgs e)
         {
+
             MessageBox.Show("Buscar caminhos entre cidades selecionadas");
+            
+
 
             PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();
             PilhaLista<Caminho> possiveis = new PilhaLista<Caminho>();
             PilhaLista<Caminho> aux = new PilhaLista<Caminho>();
 
+            int qtdCaminhos = 0;
             int atual = lsbOrigem.SelectedIndex;
             bool acabouCaminho = false;
             bool[] visitados = new bool[arvore.QuantosDados];
             bool[] saidas = new bool[arvore.QuantosDados]; //quem leva para o destino
-            int qtdCaminhos = 0;
-            
+
 
             while (!acabouCaminho)
             {
@@ -59,6 +65,7 @@ namespace apCaminhosMarte
                     {
                         caminhos.Empilhar(um);
                         saidas[um.Origem] = true;
+                        qtdCaminhos++;
                     }
                     else
                     {
@@ -67,210 +74,99 @@ namespace apCaminhosMarte
                         atual = um.Destino;
                     }
                 }
-
             }
 
-            while(!possiveis.EstaVazia())
+            vetorCaminhos = new object[qtdCaminhos];
+            int indice = 0;
+
+            while (!possiveis.EstaVazia())
             {
                 Caminho um = possiveis.Desempilhar();
                 if (saidas[um.Destino])
                     caminhos.Empilhar(um);
             }
 
-            
-            
             if (caminhos.EstaVazia())
                 MessageBox.Show("Não existe nenhum caminho disponível!");
             else
             {
+                PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
+                bool acabou = false;
 
-                while (!caminhos.EstaVazia())
+                int origem = lsbOrigem.SelectedIndex;
+
+                while(!acabou)
                 {
-                    //Caminho caminho = caminhos.Desempilhar();
-                    DataGridViewColumn d = new DataGridViewColumn();
-                    d.HeaderText = "Cidade";
-                    d.Width = 200;
-                    dataGridView1.Columns.Insert(0,d);
-                    int destino = lsbDestino.SelectedIndex;
-                    string[] nomes = new string[caminhos.Tamanho()];
-                    int qtd = 0;
-                    Caminho caminho = caminhos.Desempilhar();
-                    while (!caminhos.EstaVazia()) // while (caminho.Origem != lsbOrigem.SelectedIndex && !caminhos.EstaVazia())
+                    while (!caminhos.EstaVazia())
                     {
-                        caminho = caminhos.Desempilhar();
-                        if (caminho.Destino == destino && caminho.Origem != lsbOrigem.SelectedIndex)
+
+                        if (caminhos.OTopo().Origem == origem)
                         {
-                            destino = caminho.Origem;
-                            Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
-                            nomes[qtd] = c.Nome;
-                            //dataGridView1.Rows.Add();
-                            //dataGridView1.Rows[1].Cells[1].Value = c.Nome;
-                            qtd++;
+                            aux.Empilhar(caminhos.OTopo());
+                            origem = aux.OTopo().Destino;
+
                         }
-                    }
-                    Cidade cid = arvore.BuscaPorDado(new Cidade(caminho.Destino));
-                    for(int i = 0; i < qtd; i++)
-                        dataGridView1.Rows.Add();
+                        else
+                            aux2.Empilhar(caminhos.OTopo());
 
-                    while (caminho.QtdCaminhos != 0 && !caminhos.EstaVazia())
+                        caminhos.Desempilhar();
+                    }
+                    
+                    if (origem == lsbDestino.SelectedIndex)
                     {
-                        Caminho ca = caminhos.Desempilhar();
-                        cid = arvore.BuscaPorDado(new Cidade(caminho.Destino));
-                        dataGridView1.Rows.Add(cid.Nome);
-                        caminho.QtdCaminhos--;
+                        caminhos = aux2;
 
+                        PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
+
+                        while (!aux.EstaVazia())
+                            outra.Empilhar(aux.Desempilhar());
+
+                        aux = outra;
+
+                        if (!aux2.EstaVazia())
+                            caminhos.Empilhar(aux.OTopo());
+
+                        string[] nomes = new string[23];
+                        int n = 0;
+                        
+                        while (!aux.EstaVazia())
+                        {
+                            origem = lsbOrigem.SelectedIndex;
+                           
+
+                            Cidade c = arvore.BuscaPorDado(new Cidade(aux.Desempilhar().Origem));
+                            nomes[n] = c.Nome;
+                            n++;
+                        }
+
+                        Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
+                        nomes[n] = cidade.Nome;
+                        n++;
+
+                        vetorCaminhos[indice] = new Cidade(default(int), nomes[indice], default(int), default(int));
+                        indice++;
+
+                        int index = dataGridView1.Rows.Add();
+                        dataGridView1.Rows[index].SetValues(nomes.N);
                     }
+                    else
+                        acabou = true;
+
                 }
             }
-               
-
-            ////converterrrr
-            //PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
-            //while (!caminhos.EstaVazia())
-            //{
-            //    aux2.Empilhar(caminhos.Desempilhar());
-            //}
-
-            ////Exibir
-
-            //int qtdCidades = 0;
-
-            //if (aux2.EstaVazia())
-            //    MessageBox.Show("Não existe nenhum caminho disponível!");
-            //else
-            //    while(qtdCidades < aux2.Tamanho())
-            //    {
-            //        Caminho caminho = aux2.Desempilhar();
-
-            //        DataGridViewColumn d = new DataGridViewColumn();
-            //        d.HeaderText = caminho.Destino.ToString();
-            //        dataGridView1.Columns.Add(d);
-
-            //        DataGridViewRow n = new DataGridViewRow();
-            //        n.HeaderCell.Value = caminho.Origem.ToString();
-            //        dataGridView1.Rows.Add(n);
-
-
-            //        qtdCidades++;
-            //    }
-
-            ////exibir preço da viagem
-
-            //StreamReader arq = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);
-
-            //while (!arq.EndOfStream)
-            //{
-            //    string linha = arq.ReadLine();
-
-            //    int origem = Convert.ToInt32(linha.Substring(0, 3));
-            //    int destino = Convert.ToInt32(linha.Substring(3, 3));
-
-            //    matriz[origem, destino] = Convert.ToInt32(linha.Substring(6, 5));
-            //    //matriz[l, 0] = Convert.ToInt32(linha.Substring(6, 5));      
-            //}
-
-            //arq.Close();
-
-
-            //while(!caminhos.EstaVazia())
-            //{
-            //    for(int i = 0; i < caminhos.Tamanho(); i++)
-            //    {
-            //        DataGridViewColumn d = new DataGridViewColumn();
-            //        d.HeaderText = caminhos.;
-            //        dataGridView1.Columns.Add(d);
-
-            //        DataGridViewRow n = new DataGridViewRow();
-            //        n.HeaderCell.Value = "Cidade";
-            //        dataGridView1.Rows.Add();
-
-            //        dataGridView1[]
-
-            //        qtdCidades++;
-            //    }
-            //    Caminho c = caminhos.Desempilhar();
-            //    dataGridView1[1, 1].Value = c.;
-
-            //}
-
-
-            //DataGridViewColumn dc3 = new DataGridViewColumn();
-            //dc3.HeaderText = "Cidade";
-            //dataGridView2.Columns.Add(dc3);
-
-
-            //for(int l = 0; l < arvore.QuantosDados; l++)
-            //{
-            //    if (matriz[l, 0] == lsbOrigem.SelectedIndex)
-            //        for(int c = 0; c < arvore.QuantosDados; c++)
-            //            pilha.Empilhar(matriz[l, 0] + "," + matriz[l, c]);
-            //        } 
-            //}
-
-            //PilhaLista<string> aux = new PilhaLista<string>();
-
-            //while (!pilha.EstaVazia())
-            //{
-            //    for (int l = 0; l < arvore.QuantosDados; l++)
-            //    {
-            //        if (matriz[l, 0] == )
-            //            for (int c = 0; c < arvore.QuantosDados; c++)
-            //            {
-            //                aux.Empilhar(matriz[l, 0] + "," + matriz[l, c]);
-            //            }
-            //    }
-
-            //    pilha.Desempilhar();
-            //}
-
-            //StreamReader arq2 = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);
-
-            //while (!arq2.EndOfStream)
-            //{
-            //string linha2 = arq2.ReadLine();
-
-            //int cod1Lido = int.Parse(linha2.Substring(0, 3));
-            //int cod2Lido = int.Parse(linha2.Substring(3, 3));
-
-            //int cod1Lsb = lsbOrigem.SelectedIndex;
-            //int cod2Lsb = int.Parse(linha2.Substring(3, 3));
-
-            //if (cod1Lido == cod1Lsb)
-            //    pilha.Adicionar();
-
-            //Pen blackPen = new Pen(Color.Black, 3);
-            //Graphics grafico2 = pbMapa.CreateGraphics();
-
-            //Point p1 = new Point();
-
-            ////Cidade c1 = new Cidade();
-            ////c1.cod = cod1;
-            ////arvore.Existe(c1);
-            //p1.X = arvore.Atual.Info.x * pbMapa.Width / 4096;
-            //p1.Y = arvore.Atual.Info.y * pbMapa.Height / 2048;
-
-            //Point p2 = new Point();
-
-            ////Cidade c2 = new Cidade();
-            ////c2.cod = cod2;
-            ////arvore.Existe(c2);
-            //p2.X = arvore.Atual.Info.x * pbMapa.Width / 4096;
-            //p2.Y = arvore.Atual.Info.y * pbMapa.Height / 2048;
-
-            ////if(cod1 == )
-
-            //grafico2.DrawLine(blackPen, p1.X + 3, p1.Y + 3, p2.X + 3, p2.Y + 3);
-            //}
+            dataGridView1.Rows.RemoveAt(0);
         }
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            dataGridView1.Rows.Add();
         }
 
         private void pbMapa_Paint(object sender, PaintEventArgs e)
         {
             LerArquivo(e);
+
         }
 
         private void LerArquivo(PaintEventArgs e)
@@ -278,19 +174,14 @@ namespace apCaminhosMarte
             int n = 0;
 
             StreamReader arq = new StreamReader("CidadesMarte.txt", Encoding.UTF7);
+            StreamReader aux = new StreamReader("CidadesMarteOrdenado.txt", Encoding.UTF7);
             string linha = arq.ReadLine();
+            string linha2 = aux.ReadLine();
             Cidade cid = new Cidade(linha);
+            Cidade cid2 = new Cidade(linha2);
 
-            lsbDestino.Items.Add(n+"-"+cid.Nome);
-            lsbOrigem.Items.Add(n + "-" + cid.Nome);
-
-            //DataGridViewColumn dc = new DataGridViewColumn();
-            //dc.HeaderText = "Cidade";
-            //dataGridView1.Columns.Add(dc);
-
-            //DataGridViewColumn dc3 = new DataGridViewColumn();
-            //dc3.HeaderText = "Cidade";
-            //dataGridView2.Columns.Add(dc3);
+            lsbDestino.Items.Add(n+"-"+cid2.Nome);
+            lsbOrigem.Items.Add(n + "-" + cid2.Nome);
 
             arvore.Raiz = new NoArvore<Cidade>(cid);
             Graphics grafico = e.Graphics;
@@ -301,24 +192,17 @@ namespace apCaminhosMarte
 
             grafico.DrawString(cid.Nome, new Font("Arial", 10, FontStyle.Bold), pincel, new Point(p.X, p.Y - 20));
             grafico.FillEllipse(pincel, new RectangleF(p.X, p.Y, 8, 8));
-            while (!arq.EndOfStream)
+            while (!arq.EndOfStream )
             {
                 n++;
                 linha = arq.ReadLine();
+                linha2 = aux.ReadLine();
                 cid = new Cidade(linha);
-                lsbDestino.Items.Add(n + "-" + cid.Nome);
-                lsbOrigem.Items.Add(n + "-" + cid.Nome);
-
-                //DataGridViewColumn dc2 = new DataGridViewColumn();
-                //dc2.HeaderText = "Cidade";
-                //dataGridView1.Columns.Add(dc2);
-
-                //DataGridViewColumn dc4 = new DataGridViewColumn();
-                //dc4.HeaderText = "Cidade";
-                //dataGridView2.Columns.Add(dc4);
-
+                cid2 = new Cidade(linha2);
+                lsbDestino.Items.Add(n + "-" + cid2.Nome);
+                lsbOrigem.Items.Add(n + "-" + cid2.Nome);
+                
                 arvore.Incluir(cid);
-                //grafico = e.Graphics;
                 p = new Point();
                 p.X = cid.X * pbMapa.Width / 4096;
                 p.Y = cid.Y * pbMapa.Height / 2048;
@@ -346,7 +230,6 @@ namespace apCaminhosMarte
                 int destino = Convert.ToInt32(linha.Substring(3, 3));
 
                 matriz[origem, destino] = Convert.ToInt32(linha.Substring(6, 5));
-                //matriz[l, 0] = Convert.ToInt32(linha.Substring(6, 5));      
             }
 
             arq.Close();
@@ -376,6 +259,33 @@ namespace apCaminhosMarte
                 SolidBrush preenchimento = new SolidBrush(Color.Blue);
                 g.FillEllipse(preenchimento, xf - 35, yf - 15, 90, 90);
                 g.DrawString(Convert.ToString(raiz.Info.Nome), new Font("Comic Sans", 12), new SolidBrush(Color.Black), xf - 35, yf + 10);
+            }
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            lClick = e.RowIndex;
+            EscreverLinha();
+        }
+
+        private void EscreverLinha()
+        {
+            Graphics g = pbMapa.CreateGraphics();
+            Pen caneta = new Pen(Color.Red);
+            caneta.Width = 20;
+            string[] str = (string[])vetorCaminhos[lClick];
+            Cidade[] cid = new Cidade[str.Length];
+            
+
+            for(int i = 0; i < cid.Length; i++)
+            {
+                int xp = cid[i].X;
+                int yp = cid[i].Y;
+
+                int xf = cid[i + 1].X;
+                int yf = cid[i + 1].Y;
+
+                g.DrawLine(caneta, xp, yp, xf, yf);
             }
         }
     }

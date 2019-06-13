@@ -127,6 +127,7 @@ namespace apCaminhosMarte
                             caminhos.Empilhar(aux.OTopo());
 
                         string[] nomes = new string[23];
+                        int[] cod = new int[23];
                         int n = 0;
                         
                         while (!aux.EstaVazia())
@@ -136,18 +137,20 @@ namespace apCaminhosMarte
 
                             Cidade c = arvore.BuscaPorDado(new Cidade(aux.Desempilhar().Origem));
                             nomes[n] = c.Nome;
+                            cod[n] = c.Cod;
                             n++;
                         }
 
                         Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
                         nomes[n] = cidade.Nome;
+                        cod[n] = cidade.Cod;
                         n++;
 
-                        vetorCaminhos[indice] = new Cidade(default(int), nomes[indice], default(int), default(int));
+                        vetorCaminhos[indice] = cod;
                         indice++;
 
                         int index = dataGridView1.Rows.Add();
-                        dataGridView1.Rows[index].SetValues(nomes.N);
+                        dataGridView1.Rows[index].SetValues(nomes);
                     }
                     else
                         acabou = true;
@@ -271,19 +274,19 @@ namespace apCaminhosMarte
         private void EscreverLinha()
         {
             Graphics g = pbMapa.CreateGraphics();
-            Pen caneta = new Pen(Color.Red);
+            Pen caneta = new Pen(Color.Green);
             caneta.Width = 20;
-            string[] str = (string[])vetorCaminhos[lClick];
-            Cidade[] cid = new Cidade[str.Length];
+            int[] codCidades = (int[])vetorCaminhos[lClick];
             
-
-            for(int i = 0; i < cid.Length; i++)
+            for(int i = 0; i < codCidades.Length; i++)
             {
-                int xp = cid[i].X;
-                int yp = cid[i].Y;
+                Cidade cid = arvore.BuscaPorDado(new Cidade(codCidades[i]));
+                int xp = cid.X;
+                int yp = cid.Y;
 
-                int xf = cid[i + 1].X;
-                int yf = cid[i + 1].Y;
+                Cidade cid2 = arvore.BuscaPorDado(new Cidade(codCidades[i+1]));
+                int xf = cid2.X;
+                int yf = cid2.Y;
 
                 g.DrawLine(caneta, xp, yp, xf, yf);
             }

@@ -33,7 +33,9 @@ namespace apCaminhosMarte
         private void BtnBuscar_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Buscar caminhos entre cidades selecionadas");
-            
+
+
+            dataGridView1.Rows.Clear();
             PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();
             PilhaLista<Caminho> possiveis = new PilhaLista<Caminho>();
             PilhaLista<Caminho> aux = new PilhaLista<Caminho>();
@@ -63,6 +65,7 @@ namespace apCaminhosMarte
                         caminhos.Empilhar(um);
                         saidas[um.Origem] = true;
                         qtdCaminhos++;
+                        visitados[um.Destino] = true;
                     }
                     else
                     {
@@ -80,7 +83,10 @@ namespace apCaminhosMarte
             {
                 Caminho um = possiveis.Desempilhar();
                 if (saidas[um.Destino])
+                {
                     caminhos.Empilhar(um);
+                    saidas[um.Origem] = true; //ISSOOOOOO
+                }
             }
 
             if (caminhos.EstaVazia())
@@ -295,6 +301,7 @@ namespace apCaminhosMarte
 
                 if (cid.Cod == lsbOrigem.SelectedIndex || cid2.Cod == lsbOrigem.SelectedIndex)
                     qtdZero++;
+
                 if (qtdZero < 2)
                     g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);
             }

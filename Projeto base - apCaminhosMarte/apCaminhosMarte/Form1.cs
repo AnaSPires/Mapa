@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,11 +32,8 @@ namespace apCaminhosMarte
 
         private void BtnBuscar_Click(object sender, EventArgs e)
         {
-
             MessageBox.Show("Buscar caminhos entre cidades selecionadas");
             
-
-
             PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();
             PilhaLista<Caminho> possiveis = new PilhaLista<Caminho>();
             PilhaLista<Caminho> aux = new PilhaLista<Caminho>();
@@ -45,9 +43,7 @@ namespace apCaminhosMarte
             bool acabouCaminho = false;
             bool[] visitados = new bool[arvore.QuantosDados];
             bool[] saidas = new bool[arvore.QuantosDados]; //quem leva para o destino
-
             
-
             while (!acabouCaminho)
             {
                 for (int c = 0; c < arvore.QuantosDados; c++)
@@ -158,13 +154,13 @@ namespace apCaminhosMarte
 
                 }
             }
-            dataGridView1.Rows.RemoveAt(0);
+            //dataGridView1.Rows.RemoveAt(0);
         }
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            dataGridView1.Rows.Add();
+            //dataGridView1.Rows.Add();
         }
 
         private void pbMapa_Paint(object sender, PaintEventArgs e)
@@ -274,11 +270,18 @@ namespace apCaminhosMarte
 
         private void EscreverLinha()
         {
-            pbMapa.InitialImage = null;
+            pbMapa.Refresh();
+            //pbMapa.ResumeLayout();
+            //pbMapa.InitialImage = null;
             Graphics g = pbMapa.CreateGraphics();
             Pen caneta = new Pen(Color.Black);
-            caneta.Width = 5;
+
+            AdjustableArrowCap flecha = new AdjustableArrowCap(3, 3);
+            caneta.CustomEndCap = flecha;
+
+            caneta.Width = 3;
             int[] codCidades = (int[])vetorCaminhos[lClick];
+            int qtdZero = 0;
             
             for(int i = 0; i < codCidades.Length-1; i++)
             {
@@ -286,11 +289,14 @@ namespace apCaminhosMarte
                 int xp = cid.X* pbMapa.Width / 4096;
                 int yp = cid.Y * pbMapa.Height / 2048;
 
-                Cidade cid2 = arvore.BuscaPorDado(new Cidade(codCidades[i+1]));
+                Cidade cid2 = arvore.BuscaPorDado(new Cidade(codCidades[i + 1]));
                 int xf = cid2.X * pbMapa.Width / 4096;
                 int yf = cid2.Y * pbMapa.Height / 2048;
 
-                g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);
+                if (cid.Cod == lsbOrigem.SelectedIndex || cid2.Cod == lsbOrigem.SelectedIndex)
+                    qtdZero++;
+                if (qtdZero < 2)
+                    g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);
             }
         }
     }

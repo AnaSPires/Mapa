@@ -244,15 +244,16 @@ namespace apCaminhosMarte
             CriarMatriz();
         }
 
-        public void CriarMatriz()
+        public void CriarMatriz() //Método para criar o grafo
         {
-            matriz = new int[arvore.QuantosDados, arvore.QuantosDados];
+            matriz = new int[arvore.QuantosDados, arvore.QuantosDados]; //essa matriz será usada para armazenar as distâncias entre cada cidade
 
+            //Leitura do arquivo que contém as cidades e a distância entre elas
             StreamReader arq = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);           
 
-            while(!arq.EndOfStream)
+            while(!arq.EndOfStream) ///Loop que ocorre até que o arquivo seja completamente lido
             {
-                string linha = arq.ReadLine();
+                string linha = arq.ReadLine();   //variável que guarda todas as informações lidas na linha atual do arquivo
 
                 int origem = Convert.ToInt32(linha.Substring(0, 3));
                 int destino = Convert.ToInt32(linha.Substring(3, 3));
@@ -289,39 +290,40 @@ namespace apCaminhosMarte
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            lClick = e.RowIndex;
-            EscreverLinha();
+        {//Método disparado quando o usuário clica em alguma célula do dataGridView1
+            lClick = e.RowIndex;  //atribuição do índice da linha escolhida pelo usuário à variável global lClick
+            EscreverLinha();      //Chamada do método responsável por desenhar a linha na tela
         }
        
         private void EscreverLinha() //Método responsável por exibir no mapa o caminho selecionado pelo usuário
         {
             pbMapa.Refresh();  //Método responsável por apagar tudo antes exibido em cima do mapa
-            Graphics g = pbMapa.CreateGraphics();  
-            Pen caneta = new Pen(Color.Black);  
+            Graphics g = pbMapa.CreateGraphics();  //Atribuição do gráfico criado à variável g da classe Graphics
+            Pen caneta = new Pen(Color.Black);  //Código que cria a variável que 'desenha' no mapa
 
+            //Código que personaliza a linha que liga as cidades
             AdjustableArrowCap flecha = new AdjustableArrowCap(3, 3);
             caneta.CustomEndCap = flecha;
-
             caneta.Width = 3;
-            int[] codCidades = (int[])vetorCaminhos[lClick];
-            int qtdZero = 0;
+
+            int[] codCidades = (int[])vetorCaminhos[lClick]; //Declaração do vetor responsável por guardar o caminho selecionado por meio dos códigos da cidades que aparecem nas rotas
+            int qtdZero = 0;  //Variável que guarda o número de vezes que o valor 0 foi encontrado no vetor. Seu valor pode ser no máximo 1 já que só é possível passar uma vez pela cidade cujo código é 0
             
-            for(int i = 0; i < codCidades.Length-1; i++)
+            for(int i = 0; i < codCidades.Length-1; i++)  //Loop que percorre cada posição do vetor de códigos de cidades do caminho selecionado
             {
                 Cidade cid = arvore.BuscaPorDado(new Cidade(codCidades[i]));
-                int xp = cid.X* pbMapa.Width / 4096;
-                int yp = cid.Y * pbMapa.Height / 2048;
+                int xp = cid.X* pbMapa.Width / 4096;  //Variável que guarda a coordenada X da cidade origem
+                int yp = cid.Y * pbMapa.Height / 2048;  //Variável que guarda a coordenada Y da cidade origem
 
                 Cidade cid2 = arvore.BuscaPorDado(new Cidade(codCidades[i + 1]));
-                int xf = cid2.X * pbMapa.Width / 4096;
-                int yf = cid2.Y * pbMapa.Height / 2048;
+                int xf = cid2.X * pbMapa.Width / 4096;  //Variável que guarda a coordenada X da cidade destino
+                int yf = cid2.Y * pbMapa.Height / 2048;  //Variável que guarda a coordenada Y da cidade destino
 
-                if (cid.Cod == lsbOrigem.SelectedIndex || cid2.Cod == lsbOrigem.SelectedIndex)
-                    qtdZero++;
+                if (cid.Cod == 0 || cid2.Cod == 0) //Verifica se o código da cidade origem ou destino é igual a 0
+                    qtdZero++;  //Caso o código da cidade atual seja 0, acrescentamos uma unidade à variável qtdZero
 
-                if (qtdZero < 2)
-                    g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);
+                if (qtdZero < 2) //Como o vetor usado é do tipo int, nenhuma de suas posições pode ser nula. Portanto, as não usadas são preenchidas atomaticamente com 0 e, para evitar que o caminho seja alterado, verificamos quantas vezes o valor 0 foi econtrado
+                    g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);  //Método responsável por desenha a linha na tela, com os parâmetros da caneta que será usada e as coordenadas x e y dos pontos que serão ligados pelas setas
             }
         }
     }

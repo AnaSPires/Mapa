@@ -46,6 +46,7 @@ namespace apCaminhosMarte
             bool[] visitados = new bool[arvore.QuantosDados];
             bool[] saidas = new bool[arvore.QuantosDados]; //quem leva para o destino
 
+            
 
             while (!acabouCaminho)
             {
@@ -70,9 +71,9 @@ namespace apCaminhosMarte
                     else
                     {
                         possiveis.Empilhar(um);
-                        visitados[um.Origem] = true;
                         atual = um.Destino;
                     }
+                    visitados[um.Origem] = true;
                 }
             }
 
@@ -273,22 +274,23 @@ namespace apCaminhosMarte
 
         private void EscreverLinha()
         {
+            pbMapa.InitialImage = null;
             Graphics g = pbMapa.CreateGraphics();
-            Pen caneta = new Pen(Color.Green);
-            caneta.Width = 20;
+            Pen caneta = new Pen(Color.Black);
+            caneta.Width = 5;
             int[] codCidades = (int[])vetorCaminhos[lClick];
             
-            for(int i = 0; i < codCidades.Length; i++)
+            for(int i = 0; i < codCidades.Length-1; i++)
             {
                 Cidade cid = arvore.BuscaPorDado(new Cidade(codCidades[i]));
-                int xp = cid.X;
-                int yp = cid.Y;
+                int xp = cid.X* pbMapa.Width / 4096;
+                int yp = cid.Y * pbMapa.Height / 2048;
 
                 Cidade cid2 = arvore.BuscaPorDado(new Cidade(codCidades[i+1]));
-                int xf = cid2.X;
-                int yf = cid2.Y;
+                int xf = cid2.X * pbMapa.Width / 4096;
+                int yf = cid2.Y * pbMapa.Height / 2048;
 
-                g.DrawLine(caneta, xp, yp, xf, yf);
+                g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);
             }
         }
     }

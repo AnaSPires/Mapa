@@ -38,3 +38,13 @@ C:\Users\DELL\Documents\Github\Mapa\Projeto base - apCaminhosMarte\apCaminhosMar
 C:\Users\DELL\Documents\Github\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.csproj.CoreCompileInputs.cache
 C:\Users\DELL\Documents\Github\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.exe
 C:\Users\DELL\Documents\Github\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.pdb
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\bin\Debug\apCaminhosMarte.exe.config
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\bin\Debug\apCaminhosMarte.exe
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\bin\Debug\apCaminhosMarte.pdb
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.csprojAssemblyReference.cache
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.Form1.resources
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.Properties.Resources.resources
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.csproj.GenerateResource.cache
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.csproj.CoreCompileInputs.cache
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.exe
+C:\Users\Ariane\Documents\GitHub\Mapa\Projeto base - apCaminhosMarte\apCaminhosMarte\obj\Debug\apCaminhosMarte.pdb

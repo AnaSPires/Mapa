@@ -45,6 +45,7 @@ namespace apCaminhosMarte
             bool acabouCaminho = false;
             bool[] visitados = new bool[arvore.QuantosDados];
             bool[] saidas = new bool[arvore.QuantosDados]; //quem leva para o destino
+            int destino = lsbDestino.SelectedIndex;
             
             while (!acabouCaminho)
             {
@@ -75,10 +76,10 @@ namespace apCaminhosMarte
                     visitados[um.Origem] = true;
                 }
             }
-
+            
             vetorCaminhos = new object[qtdCaminhos];
             int indice = 0;
-
+            
             while (!possiveis.EstaVazia())
             {
                 Caminho um = possiveis.Desempilhar();

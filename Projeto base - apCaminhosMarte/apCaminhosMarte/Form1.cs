@@ -34,6 +34,7 @@ namespace apCaminhosMarte
         {
             MessageBox.Show("Buscar caminhos entre cidades selecionadas");
 
+            pbMapa.Refresh();
 
             dataGridView1.Rows.Clear();
             PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();
@@ -86,7 +87,7 @@ namespace apCaminhosMarte
                 if (saidas[um.Destino])
                 {
                     caminhos.Empilhar(um);
-                    saidas[um.Origem] = true; //ISSOOOOOO
+                    saidas[um.Origem] = true;
                 }
             }
 
@@ -96,6 +97,8 @@ namespace apCaminhosMarte
             {
                 PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
                 bool acabou = false;
+                string[] melhorCaminho = new string[1];
+                int caminhoAnterior = Int32.MaxValue;
 
                 int origem = lsbOrigem.SelectedIndex;
 
@@ -133,22 +136,29 @@ namespace apCaminhosMarte
                         string[] nomes = new string[23];
                         int[] cod = new int[23];
                         int n = 0;
+                        int distanciaAtual = 0;
                         
                         while (!aux.EstaVazia())
                         {
                             origem = lsbOrigem.SelectedIndex;
-                           
 
-                            Cidade c = arvore.BuscaPorDado(new Cidade(aux.Desempilhar().Origem));
+                            Caminho caminho = aux.Desempilhar();
+
+                            Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
                             nomes[n] = c.Nome;
                             cod[n] = c.Cod;
                             n++;
+
+                            distanciaAtual += caminho.Distancia;
                         }
 
                         Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
                         nomes[n] = cidade.Nome;
                         cod[n] = cidade.Cod;
                         n++;
+
+                        if (caminhoAnterior > distanciaAtual)
+                            melhorCaminho = nomes;
 
                         vetorCaminhos[indice] = cod;
                         indice++;
@@ -158,22 +168,26 @@ namespace apCaminhosMarte
                     }
                     else
                         acabou = true;
-
                 }
+                ExibirMelhorCaminho(melhorCaminho);
             }
-            //dataGridView1.Rows.RemoveAt(0);
         }
 
+        private void ExibirMelhorCaminho(string[] vet)
+        {
+            int index = dataGridView2.Rows.Add();
+            dataGridView2.Rows[index].SetValues(vet);
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //dataGridView1.Rows.Add();
+            for(int i = 0; i < 23; i++)
+                dataGridView2.Columns.Add("x", "Cidade");
         }
 
         private void pbMapa_Paint(object sender, PaintEventArgs e)
         {
             LerArquivo(e);
-
         }
 
         private void LerArquivo(PaintEventArgs e)
@@ -219,6 +233,7 @@ namespace apCaminhosMarte
             }
 
             arq.Close();
+            aux.Close();
 
             CriarMatriz();
         }
@@ -259,10 +274,8 @@ namespace apCaminhosMarte
                 if (primeiraVez)
                     yf = 25;
                 g.DrawLine(caneta, x, y, xf, yf);
-                // sleep(100);
                 DesenharArvore(false, raiz.Esq, xf, yf, Math.PI / 2 + incremento,  incremento * 0.50, comprimento * 0.8, g);
                 DesenharArvore(false, raiz.Dir, xf, yf, Math.PI / 2 - incremento,  incremento * 0.50, comprimento * 0.8, g);
-                // sleep(100);
                 SolidBrush preenchimento = new SolidBrush(Color.Blue);
                 g.FillEllipse(preenchimento, xf - 35, yf - 15, 90, 90);
                 g.DrawString(Convert.ToString(raiz.Info.Nome), new Font("Comic Sans", 12), new SolidBrush(Color.Black), xf - 35, yf + 10);
@@ -278,8 +291,6 @@ namespace apCaminhosMarte
         private void EscreverLinha()
         {
             pbMapa.Refresh();
-            //pbMapa.ResumeLayout();
-            //pbMapa.InitialImage = null;
             Graphics g = pbMapa.CreateGraphics();
             Pen caneta = new Pen(Color.Black);
 

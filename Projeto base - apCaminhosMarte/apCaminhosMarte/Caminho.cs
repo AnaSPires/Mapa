@@ -9,7 +9,7 @@ class Caminho : IComparable<Caminho>
 {
     int destino, origem, distancia, qtdCaminhos;
 
-    public Caminho(int o, int d, int distancia, int qtd)
+    public Caminho(int o, int d, int distancia, int qtd)  //Contrutor comum de uma instância da classe Caminho
     {
         Destino = d;
         Origem = o;

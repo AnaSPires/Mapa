@@ -40,4 +40,42 @@ public class PilhaLista<Dado> : IStack<Dado> where Dado : IComparable<Dado>
     tamanho--; // atualiza número de elementos na pilha
     return o; // devolve o objeto que estava no topo
   }
+
+    //public PilhaLista<Dado> Copiar(PilhaLista<Dado> copiada)
+    //{
+    //    PilhaLista<Dado> copia = new PilhaLista<Dado>();
+    //    PilhaLista<Dado> aux = copiada;
+
+    //    while (!aux.EstaVazia())
+    //        copia.Empilhar(aux.Desempilhar());
+        
+    //    return copia.Inverter();
+    //}
+
+    public bool Existe(Dado dado)
+    {
+        PilhaLista<Dado> pilhaAux = this;
+
+        while(!pilhaAux.EstaVazia())
+        {
+            if (pilhaAux.OTopo().CompareTo(dado) == 0)
+                return true;
+
+            pilhaAux.Desempilhar();
+        }
+            
+
+        return false;
+    }
+
+    public PilhaLista<Dado> Inverter()
+    {
+        PilhaLista<Dado> aux = this;
+        PilhaLista<Dado> outra = new PilhaLista<Dado>();
+
+        while (!aux.EstaVazia())
+            outra.Empilhar(aux.Desempilhar());
+
+        return outra;
+    }
 }

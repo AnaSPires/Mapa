@@ -20,6 +20,7 @@ namespace apCaminhosMarte
         Arvore<Cidade> arvore;   //Declaração da árvore usada
         int[,] matriz;           // Declaração do grafo percorrido na procura de caminhos
         object[] vetorCaminhos;  //vetor usado para guardar, em cada posição, um caminho encontrado e guardado em um vetor de int
+        string[] melhorCaminho;  //Vetor do tipo string que guardará as rotas do melhor caminho econtrado, definido pela distância que seria percorrida
         int lClick = 0;          // Variável que guarda a linha seleciona pelo usuário para que o caminho escolhido seja exibido no mapa
 
         public Form1()
@@ -100,7 +101,7 @@ namespace apCaminhosMarte
             {
                 PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
                 bool acabou = false;
-                string[] melhorCaminho = new string[1];   //Vetor do tipo string que guardará as rotas do melhor caminho econtrado, definido pela distância que seria percorrida
+                melhorCaminho = new string[1];   
                 int caminhoAnterior = Int32.MaxValue;
 
                 int origem = lsbOrigem.SelectedIndex;   //Variável que guarda o índice da cidade escolhida como origem pelo usuário
@@ -325,6 +326,12 @@ namespace apCaminhosMarte
                 if (qtdZero < 2) //Como o vetor usado é do tipo int, nenhuma de suas posições pode ser nula. Portanto, as não usadas são preenchidas atomaticamente com 0 e, para evitar que o caminho seja alterado, verificamos quantas vezes o valor 0 foi econtrado
                     g.DrawLine(caneta, xp+4, yp+2, xf+4, yf+2);  //Método responsável por desenha a linha na tela, com os parâmetros da caneta que será usada e as coordenadas x e y dos pontos que serão ligados pelas setas
             }
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            lClick = e.RowIndex;  //atribuição do índice da linha escolhida pelo usuário à variável global lClick
+            EscreverLinha();
         }
     }
 }

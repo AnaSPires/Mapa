@@ -52,20 +52,33 @@ public class PilhaLista<Dado> : IStack<Dado> where Dado : IComparable<Dado>
     //    return copia.Inverter();
     //}
 
-    public bool Existe(Dado dado)
-    {
-        PilhaLista<Dado> pilhaAux = this;
-
-        while(!pilhaAux.EstaVazia())
+        public bool Existe(Dado dado)
         {
-            if (pilhaAux.OTopo().CompareTo(dado) == 0)
-                return true;
+        PilhaLista<Dado> pilhaAux = Clone();
 
-            pilhaAux.Desempilhar();
-        }
-            
+            while (!EstaVazia())
+            {
+                if (OTopo().CompareTo(dado) == 0)
+                {
+                    this.topo = pilhaAux.topo;
+                    this.tamanho = pilhaAux.tamanho;
+                    return true;
+                }
+                Desempilhar();
+            }
+        this.topo = pilhaAux.topo;
+        this.tamanho = pilhaAux.tamanho;
 
-        return false;
+            return false;
+    }
+
+    public PilhaLista<Dado> Clone()
+    {
+        PilhaLista<Dado> pilhaAux = new PilhaLista<Dado>();
+        pilhaAux.topo = topo;
+        pilhaAux.tamanho = tamanho;
+
+        return pilhaAux;
     }
 
     public PilhaLista<Dado> Inverter()

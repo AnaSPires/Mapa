@@ -109,12 +109,39 @@ namespace apCaminhosMarte
 
                 int qtdCaminhosExibidos = 0;
 
+                PilhaLista<Caminho> todos = new PilhaLista<Caminho>();
+
                 while (qtdCaminhosExibidos != qtdCaminhos)
                 {
                     PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
 
+                    PilhaLista<Caminho> copia = todos.Clone();
+                    if (!caminhos.EstaVazia())
+                    {
+                        while (!copia.EstaVazia())
+                        {
+                            bool pode = true;
+                            if (copia.OTopo().Destino == caminhos.OTopo().Origem)
+                            {
+                                PilhaLista<Caminho> outra = caminhos.Clone();
+                                while (!outra.EstaVazia())
+                                {
+                                    if (caminhos.OTopo().Origem == outra.OTopo().Destino)
+                                        pode = false;
+                                    outra.Desempilhar();
+                                }
+                                if (pode)
+                                {
+                                    caminhos.Empilhar(copia.OTopo());
+                                }
+                            }
+                            copia.Desempilhar();
+                        }
+                    }
+
                     while (!caminhos.EstaVazia())
                     {
+                        
                         if (caminhos.OTopo().Origem == origem)
                         {
                             aux.Empilhar(caminhos.OTopo());
@@ -131,9 +158,9 @@ namespace apCaminhosMarte
                     {
                         if (!aux.Existe(aux2.OTopo()))
                         {
-                            if (aux2.OTopo().Origem == origem)
+                            if (aux2.OTopo().Destino == origem)
                             {
-                                caminhos.Empilhar(caminhos.OTopo());
+                                caminhos.Empilhar(aux2.OTopo());
                                 origem = aux2.OTopo().Destino;
                             }                         
                         }
@@ -153,6 +180,7 @@ namespace apCaminhosMarte
                         origem = lsbOrigem.SelectedIndex;
 
                         Caminho caminho = aux.Desempilhar();
+                        todos.Empilhar(caminho);
 
                         Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
                         nomes[n] = c.Nome;

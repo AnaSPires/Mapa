@@ -41,20 +41,9 @@ public class PilhaLista<Dado> : IStack<Dado> where Dado : IComparable<Dado>
     return o; // devolve o objeto que estava no topo
   }
 
-    //public PilhaLista<Dado> Copiar(PilhaLista<Dado> copiada)
-    //{
-    //    PilhaLista<Dado> copia = new PilhaLista<Dado>();
-    //    PilhaLista<Dado> aux = copiada;
-
-    //    while (!aux.EstaVazia())
-    //        copia.Empilhar(aux.Desempilhar());
-        
-    //    return copia.Inverter();
-    //}
-
         public bool Existe(Dado dado)
         {
-        PilhaLista<Dado> pilhaAux = Clone();
+            PilhaLista<Dado> pilhaAux = Clone();
 
             while (!EstaVazia())
             {
@@ -66,11 +55,11 @@ public class PilhaLista<Dado> : IStack<Dado> where Dado : IComparable<Dado>
                 }
                 Desempilhar();
             }
-        this.topo = pilhaAux.topo;
-        this.tamanho = pilhaAux.tamanho;
+            this.topo = pilhaAux.topo;
+            this.tamanho = pilhaAux.tamanho;
 
             return false;
-    }
+        }
 
     public PilhaLista<Dado> Clone()
     {

@@ -78,13 +78,13 @@ namespace apCaminhosMarte
                         possiveis.Empilhar(um);  //Ao acharmos uma possível rota, ela é guardada na pilha de possíveis rotas
                         atual = um.Destino;      //Mudamos o valor da variável atual, que passará a guardar a origem do caminho que será verificado posteriormente
                     }
-                    visitados[um.Origem] = true;  
+                    visitados[um.Origem] = true;
                 }
             }
-            
+
             vetorCaminhos = new object[qtdCaminhos];  //instanciação do vetor de caminhos, com o tamanho referente à quantidade de camihos encontrada
             int indice = 0;  //Declaração da variável responsável por representar a posição do vetor declarado acima em que o próximo caminho deverá ser armazenado
-            
+
             while (!possiveis.EstaVazia())   //Loop responsável por obter todos os caminhos definitivos que estão na pilha de possíveis caminhos
             {
                 Caminho um = possiveis.Desempilhar();    //Variável local que guarda o caminho que será verificado
@@ -115,273 +115,381 @@ namespace apCaminhosMarte
                 {
                     PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
 
-                    PilhaLista<Caminho> copia = todos.Clone();
-                    if (!caminhos.EstaVazia())
+                    //PilhaLista<Caminho> copia = todos.Clone();
+                    //if (!caminhos.EstaVazia())
+                    //{
+                    //    while (!copia.EstaVazia())
+                    //    {
+                    //        bool pode = true;
+                    //        if (copia.OTopo().Destino == caminhos.OTopo().Origem)
+                    //        {
+                    //            PilhaLista<Caminho> outra = caminhos.Clone();
+                    //            while (!outra.EstaVazia())
+                    //            {
+                    //                if (caminhos.OTopo().Origem == outra.OTopo().Destino)
+                    //                    pode = false;
+                    //                outra.Desempilhar();
+                    //            }
+                    //            if (pode)
+                    //            {
+                    //                caminhos.Empilhar(copia.OTopo());
+                    //            }
+                    //        }
+                    //        copia.Desempilhar();
+                    //    }
+                    //}
+                    PilhaLista<Caminho>[] vetorCaminhosSeparados = new PilhaLista<Caminho>[qtdCaminhos];
+                    int aimeudeus = 0;
+
+                    while (aimeudeus < qtdCaminhos)
                     {
-                        while (!copia.EstaVazia())
-                        {
-                            bool pode = true;
-                            if (copia.OTopo().Destino == caminhos.OTopo().Origem)
+                        bool ok = false;
+                        while(!ok) //enquanto um caminho não for encontrado
+                        {  
+                            while (!caminhos.EstaVazia())
                             {
-                                PilhaLista<Caminho> outra = caminhos.Clone();
-                                while (!outra.EstaVazia())
+                                if (caminhos.OTopo().Origem == origem)
                                 {
-                                    if (caminhos.OTopo().Origem == outra.OTopo().Destino)
-                                        pode = false;
-                                    outra.Desempilhar();
+                                    aux.Empilhar(caminhos.OTopo());
+                                    origem = aux.OTopo().Destino;
                                 }
-                                if (pode)
-                                {
-                                    caminhos.Empilhar(copia.OTopo());
-                                }
+                                aux2.Empilhar(caminhos.OTopo());
+                                caminhos.Desempilhar();
                             }
-                            copia.Desempilhar();
-                        }
-                    }
 
-                    while (!caminhos.EstaVazia())
-                    {
-                        
-                        if (caminhos.OTopo().Origem == origem)
-                        {
-                            aux.Empilhar(caminhos.OTopo());
-                            origem = aux.OTopo().Destino;
-                            
-                        }
-                        aux2.Empilhar(caminhos.OTopo());
-                        caminhos.Desempilhar();
-                    }
-
-                    aux2 = aux2.Inverter();
-                    
-                    while (!aux2.EstaVazia())
-                    {
-                        if (!aux.Existe(aux2.OTopo()))
-                        {
-                            if (aux2.OTopo().Destino == origem)
+                            if (aux.OTopo().Destino != lsbDestino.SelectedIndex)
                             {
-                                caminhos.Empilhar(aux2.OTopo());
-                                origem = aux2.OTopo().Destino;
-                            }                         
+                                while(aux2.OTopo() != aux.OTopo())
+                                {
+                                    caminhos.Empilhar(aux2.Desempilhar());
+                                }
+                                aux = new PilhaLista<Caminho>();
+                                aux2.Desempilhar();
+                                while(!aux2.EstaVazia())
+                                    caminhos.Empilhar(aux2.Desempilhar());
+                                origem = lsbOrigem.SelectedIndex;
+                            }
+                            else
+                                ok = true;
+                        }
+
+
+                        vetorCaminhosSeparados[aimeudeus] = aux;
+                        aimeudeus++;
+
+                        //aux = aux.Inverter();
+
+                        while (aux2.OTopo().CompareTo(aux.OTopo()) != 0)//aqui
+                        {
+                            caminhos.Empilhar(aux2.Desempilhar());
                         }
 
                         aux2.Desempilhar();
+
+                        while (!aux2.EstaVazia())
+                            caminhos.Empilhar(aux2.Desempilhar());
+
+                        aux = new PilhaLista<Caminho>();
+                        origem = lsbOrigem.SelectedIndex;
                     }
-                    
-                    aux = aux.Inverter();
 
                     string[] nomes = new string[23];
                     int[] cod = new int[23];
                     int n = 0;
                     int distanciaAtual = 0;
 
-                    while (!aux.EstaVazia())
+                    for(int a = 0; a < aimeudeus; a++)
                     {
-                        origem = lsbOrigem.SelectedIndex;
+                        nomes = new string[23];
+                        n = 0;
+                        aux = vetorCaminhosSeparados[a];
 
-                        Caminho caminho = aux.Desempilhar();
-                        todos.Empilhar(caminho);
+                        PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
 
-                        Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
-                        nomes[n] = c.Nome;
-                        cod[n] = c.Cod;
+                        while (!aux.EstaVazia())
+                            outra.Empilhar(aux.Desempilhar());
+
+                        aux = outra;
+
+                        while (!aux.EstaVazia())
+                        {
+                            Caminho caminho = aux.Desempilhar();
+                            todos.Empilhar(caminho);
+
+                            Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
+                            nomes[n] = c.Nome;
+                            cod[n] = c.Cod;
+                            n++;
+
+                            distanciaAtual += caminho.Distancia;
+                        }
+
+                        Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
+                        nomes[n] = cidade.Nome;
+                        cod[n] = cidade.Cod;
                         n++;
 
-                        distanciaAtual += caminho.Distancia;
+                        if (caminhoAnterior > distanciaAtual)
+                        {
+                            melhorCaminho = nomes;
+                            caminhoAnterior = distanciaAtual;
+                        }
+
+                        vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
+                        indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
+
+                        int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
+                        dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
+
+
+                        qtdCaminhosExibidos++;
                     }
 
-                    //Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
-                    //nomes[n] = cidade.Nome;
-                    //cod[n] = cidade.Cod;
-                    //n++;
+                    ExibirMelhorCaminho(melhorCaminho);
 
-                    if (caminhoAnterior > distanciaAtual)
-                    {
-                        melhorCaminho = nomes;
-                        caminhoAnterior = distanciaAtual;
-                    }
+                    //while (!caminhos.EstaVazia())
+                    //{
 
-                    vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
-                    indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
+                    //    if (caminhos.OTopo().Origem == origem)
+                    //    {
+                    //        aux.Empilhar(caminhos.OTopo());
+                    //        origem = aux.OTopo().Destino;                            
+                    //    }
+                    //    aux2.Empilhar(caminhos.OTopo());
+                    //    caminhos.Desempilhar();
+                    //}
 
-                    int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
-                    dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
+                    //        aux2 = aux2.Inverter();
 
-                    qtdCaminhosExibidos++;
+                    //        while (!aux2.EstaVazia())
+                    //        {
+                    //            //if (!aux.Existe(aux2.OTopo()))
+                    //            //{
+                    //                //if (aux2.OTopo().Destino == origem)
+                    //                //{
+                    //                    caminhos.Empilhar(aux2.OTopo());
+                    //                    //origem = aux2.OTopo().Destino;
+                    //                //}                         
+                    //            //}
+
+                    //            aux2.Desempilhar();
+                    //        }
+
+                    //        aux = aux.Inverter();
+
+                    //        string[] nomes = new string[23];
+                    //        int[] cod = new int[23];
+                    //        int n = 0;
+                    //        int distanciaAtual = 0;
+
+                    //        while (!aux.EstaVazia())
+                    //        {
+                    //            origem = lsbOrigem.SelectedIndex;
+
+                    //            Caminho caminho = aux.Desempilhar();
+                    //            todos.Empilhar(caminho);
+
+                    //            Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
+                    //            nomes[n] = c.Nome;
+                    //            cod[n] = c.Cod;
+                    //            n++;
+
+                    //            distanciaAtual += caminho.Distancia;
+                    //        }
+
+                    //        Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
+                    //        nomes[n] = cidade.Nome;
+                    //        cod[n] = cidade.Cod;
+                    //        n++;
+
+                    //        if (caminhoAnterior > distanciaAtual)
+                    //        {
+                    //            melhorCaminho = nomes;
+                    //            caminhoAnterior = distanciaAtual;
+                    //        }
+
+                    //        vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
+                    //        indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
+
+                    //        int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
+                    //        dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
+
+                    //        qtdCaminhosExibidos++;
+                    //    }
+
+                    //    ExibirMelhorCaminho(melhorCaminho);  //Depois de todos os caminhos terem sido analisados, o melhor deles é exibido no dataGridView2
+                    //}
+
+                    //int qtdCaminhosExibidos = 0;
+
+                    //if (caminhos.EstaVazia())  //Verificação: se a pilha definitiva de caminhos está vazia, alertamos ao usuário que não existe um caminho
+                    //    MessageBox.Show("Não existe nenhum caminho disponível!");
+                    //else
+                    //{
+                    //    PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
+                    //    bool acabou = false;
+                    //    melhorCaminho = new string[1];
+                    //    int caminhoAnterior = Int32.MaxValue;
+
+                    //    int origem = lsbOrigem.SelectedIndex;   //Variável que guarda o índice da cidade escolhida como origem pelo usuário
+
+                    //    while (!acabou)
+                    //    {
+                    //        while (!caminhos.EstaVazia())
+                    //        {
+                    //            if (caminhos.OTopo().Origem == origem)
+                    //            {
+                    //                aux.Empilhar(caminhos.OTopo());
+                    //                origem = aux.OTopo().Destino;
+                    //            }
+                    //            else
+                    //                aux2.Empilhar(caminhos.OTopo());
+
+                    //            caminhos.Desempilhar();
+                    //        }
+
+                    //        if (origem == lsbDestino.SelectedIndex)
+                    //        {
+                    //            caminhos = aux2;
+
+                    //            PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
+
+                    //            while (!aux.EstaVazia())
+                    //                outra.Empilhar(aux.Desempilhar());
+
+                    //            aux = outra;
+
+                    //            //if (!aux2.EstaVazia())
+                    //            //    caminhos.Empilhar(aux.OTopo());
+
+                    //            string[] nomes = new string[23];
+                    //            int[] cod = new int[23];
+                    //            int n = 0;
+                    //            int distanciaAtual = 0;
+
+                    //            while (!aux.EstaVazia())
+                    //            {
+                    //                origem = lsbOrigem.SelectedIndex;
+
+                    //                Caminho caminho = aux.Desempilhar();
+
+                    //                Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
+                    //                nomes[n] = c.Nome;
+                    //                cod[n] = c.Cod;
+                    //                n++;
+
+                    //                distanciaAtual += caminho.Distancia;
+                    //            }
+
+                    //            Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
+                    //            nomes[n] = cidade.Nome;
+                    //            cod[n] = cidade.Cod;
+                    //            n++;
+
+                    //            if (caminhoAnterior > distanciaAtual)
+                    //            {
+                    //                melhorCaminho = nomes;
+                    //                caminhoAnterior = distanciaAtual;
+                    //            }
+
+                    //            vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
+                    //            indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
+
+                    //            int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
+                    //            dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
+                    //        }
+                    //        else
+                    //            if(qtdCaminhosExibidos == qtdCaminhos)
+                    //             acabou = true; //Se chegamos ao destino, então o caminho acabou, assim atribuímos 'true' para a variável e paramos o loop
+
+                    //        qtdCaminhosExibidos++;
+                    //    }
+                    //    ExibirMelhorCaminho(melhorCaminho);  //Depois de todos os caminhos terem sido analisados, o melhor deles é exibido no dataGridView2
+                    //}
+
+
+                    //if (caminhos.EstaVazia())  //Verificação: se a pilha definitiva de caminhos está vazia, alertamos ao usuário que não existe um caminho
+                    //    MessageBox.Show("Não existe nenhum caminho disponível!");
+                    //else
+                    //{
+                    //    PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
+                    //    bool acabou = false;
+                    //    melhorCaminho = new string[1];
+                    //    int caminhoAnterior = Int32.MaxValue;
+
+                    //    int origem = lsbOrigem.SelectedIndex;   //Variável que guarda o índice da cidade escolhida como origem pelo usuário
+
+                    //    while (!acabou)
+                    //    {
+                    //        while (!caminhos.EstaVazia())
+                    //        {
+                    //            if (caminhos.OTopo().Origem == origem)
+                    //            {
+                    //                aux.Empilhar(caminhos.OTopo());
+                    //                origem = aux.OTopo().Destino;
+                    //            }
+                    //            else
+                    //                aux2.Empilhar(caminhos.OTopo());
+
+                    //            caminhos.Desempilhar();
+                    //        }
+
+                    //        if (origem == lsbDestino.SelectedIndex)
+                    //        {
+                    //            caminhos = aux2;
+
+                    //            PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
+
+                    //            while (!aux.EstaVazia())
+                    //                outra.Empilhar(aux.Desempilhar());
+
+                    //            aux = outra;
+
+                    //            if (!aux2.EstaVazia())
+                    //                caminhos.Empilhar(aux.OTopo());
+
+                    //            string[] nomes = new string[23];
+                    //            int[] cod = new int[23];
+                    //            int n = 0;
+                    //            int distanciaAtual = 0;
+
+                    //            while (!aux.EstaVazia())
+                    //            {
+                    //                origem = lsbOrigem.SelectedIndex;
+
+                    //                Caminho caminho = aux.Desempilhar();
+
+                    //                Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
+                    //                nomes[n] = c.Nome;
+                    //                cod[n] = c.Cod;
+                    //                n++;
+
+                    //                distanciaAtual += caminho.Distancia;
+                    //            }
+
+                    //            Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
+                    //            nomes[n] = cidade.Nome;
+                    //            cod[n] = cidade.Cod;
+                    //            n++;
+
+                    //            if (caminhoAnterior > distanciaAtual)
+                    //            {
+                    //                melhorCaminho = nomes;
+                    //                caminhoAnterior = distanciaAtual;
+                    //            }
+
+                    //            vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
+                    //            indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
+
+                    //            int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
+                    //            dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
+                    //        }
+                    //        else
+                    //            acabou = true; //Se chegamos ao destino, então o caminho acabou, assim atribuímos 'true' para a variável e paramos o loop
+                    //    }
+                    //    ExibirMelhorCaminho(melhorCaminho);  //Depois de todos os caminhos terem sido analisados, o melhor deles é exibido no dataGridView2
                 }
-
-                ExibirMelhorCaminho(melhorCaminho);  //Depois de todos os caminhos terem sido analisados, o melhor deles é exibido no dataGridView2
             }
-
-            //int qtdCaminhosExibidos = 0;
-
-            //if (caminhos.EstaVazia())  //Verificação: se a pilha definitiva de caminhos está vazia, alertamos ao usuário que não existe um caminho
-            //    MessageBox.Show("Não existe nenhum caminho disponível!");
-            //else
-            //{
-            //    PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
-            //    bool acabou = false;
-            //    melhorCaminho = new string[1];
-            //    int caminhoAnterior = Int32.MaxValue;
-
-            //    int origem = lsbOrigem.SelectedIndex;   //Variável que guarda o índice da cidade escolhida como origem pelo usuário
-
-            //    while (!acabou)
-            //    {
-            //        while (!caminhos.EstaVazia())
-            //        {
-            //            if (caminhos.OTopo().Origem == origem)
-            //            {
-            //                aux.Empilhar(caminhos.OTopo());
-            //                origem = aux.OTopo().Destino;
-            //            }
-            //            else
-            //                aux2.Empilhar(caminhos.OTopo());
-
-            //            caminhos.Desempilhar();
-            //        }
-
-            //        if (origem == lsbDestino.SelectedIndex)
-            //        {
-            //            caminhos = aux2;
-
-            //            PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
-
-            //            while (!aux.EstaVazia())
-            //                outra.Empilhar(aux.Desempilhar());
-
-            //            aux = outra;
-
-            //            //if (!aux2.EstaVazia())
-            //            //    caminhos.Empilhar(aux.OTopo());
-
-            //            string[] nomes = new string[23];
-            //            int[] cod = new int[23];
-            //            int n = 0;
-            //            int distanciaAtual = 0;
-
-            //            while (!aux.EstaVazia())
-            //            {
-            //                origem = lsbOrigem.SelectedIndex;
-
-            //                Caminho caminho = aux.Desempilhar();
-
-            //                Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
-            //                nomes[n] = c.Nome;
-            //                cod[n] = c.Cod;
-            //                n++;
-
-            //                distanciaAtual += caminho.Distancia;
-            //            }
-
-            //            Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
-            //            nomes[n] = cidade.Nome;
-            //            cod[n] = cidade.Cod;
-            //            n++;
-
-            //            if (caminhoAnterior > distanciaAtual)
-            //            {
-            //                melhorCaminho = nomes;
-            //                caminhoAnterior = distanciaAtual;
-            //            }
-
-            //            vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
-            //            indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
-
-            //            int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
-            //            dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
-            //        }
-            //        else
-            //            if(qtdCaminhosExibidos == qtdCaminhos)
-            //             acabou = true; //Se chegamos ao destino, então o caminho acabou, assim atribuímos 'true' para a variável e paramos o loop
-
-            //        qtdCaminhosExibidos++;
-            //    }
-            //    ExibirMelhorCaminho(melhorCaminho);  //Depois de todos os caminhos terem sido analisados, o melhor deles é exibido no dataGridView2
-            //}
-
-
-            //if (caminhos.EstaVazia())  //Verificação: se a pilha definitiva de caminhos está vazia, alertamos ao usuário que não existe um caminho
-            //    MessageBox.Show("Não existe nenhum caminho disponível!");
-            //else
-            //{
-            //    PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
-            //    bool acabou = false;
-            //    melhorCaminho = new string[1];
-            //    int caminhoAnterior = Int32.MaxValue;
-
-            //    int origem = lsbOrigem.SelectedIndex;   //Variável que guarda o índice da cidade escolhida como origem pelo usuário
-
-            //    while (!acabou)
-            //    {
-            //        while (!caminhos.EstaVazia())
-            //        {
-            //            if (caminhos.OTopo().Origem == origem)
-            //            {
-            //                aux.Empilhar(caminhos.OTopo());
-            //                origem = aux.OTopo().Destino;
-            //            }
-            //            else
-            //                aux2.Empilhar(caminhos.OTopo());
-
-            //            caminhos.Desempilhar();
-            //        }
-
-            //        if (origem == lsbDestino.SelectedIndex)
-            //        {
-            //            caminhos = aux2;
-
-            //            PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
-
-            //            while (!aux.EstaVazia())
-            //                outra.Empilhar(aux.Desempilhar());
-
-            //            aux = outra;
-
-            //            if (!aux2.EstaVazia())
-            //                caminhos.Empilhar(aux.OTopo());
-
-            //            string[] nomes = new string[23];
-            //            int[] cod = new int[23];
-            //            int n = 0;
-            //            int distanciaAtual = 0;
-
-            //            while (!aux.EstaVazia())
-            //            {
-            //                origem = lsbOrigem.SelectedIndex;
-
-            //                Caminho caminho = aux.Desempilhar();
-
-            //                Cidade c = arvore.BuscaPorDado(new Cidade(caminho.Origem));
-            //                nomes[n] = c.Nome;
-            //                cod[n] = c.Cod;
-            //                n++;
-
-            //                distanciaAtual += caminho.Distancia;
-            //            }
-
-            //            Cidade cidade = arvore.BuscaPorDado(new Cidade(lsbDestino.SelectedIndex));
-            //            nomes[n] = cidade.Nome;
-            //            cod[n] = cidade.Cod;
-            //            n++;
-
-            //            if (caminhoAnterior > distanciaAtual)
-            //            {
-            //                melhorCaminho = nomes;
-            //                caminhoAnterior = distanciaAtual;
-            //            }
-
-            //            vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
-            //            indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
-
-            //            int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
-            //            dataGridView1.Rows[index].SetValues(nomes); //Atribuição do caminho atual à linha adicionada 
-            //        }
-            //        else
-            //            acabou = true; //Se chegamos ao destino, então o caminho acabou, assim atribuímos 'true' para a variável e paramos o loop
-            //    }
-            //    ExibirMelhorCaminho(melhorCaminho);  //Depois de todos os caminhos terem sido analisados, o melhor deles é exibido no dataGridView2
-            //}
         }
 
         private void ExibirMelhorCaminho(string[] vet) //Método responsável por exibir o melhor caminho dentre todos os achados no dataGridView2

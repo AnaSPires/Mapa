@@ -89,19 +89,28 @@ namespace apCaminhosMarte
             PilhaLista<Caminho> outra = caminhos.Clone();
             while (!outra.EstaVazia())                                   //Loop responsável por obter todos os caminhos definitivos que estão na pilha de possíveis caminhos
             {
+                PilhaLista<Caminho> outra2 = possiveis.Clone();
                 Caminho um = outra.Desempilhar();                              //Caso o caminho atual seja uma solução, é empilhado na pilha caminhos
-                    saidas[um.Origem] = true;   
-            }
 
-            while (!possiveis.EstaVazia())                                   //Loop responsável por obter todos os caminhos definitivos que estão na pilha de possíveis caminhos
-            {
-                Caminho um = possiveis.Desempilhar();                        //Variável local que guarda o caminho que será verificado
-                if (saidas[um.Destino])                                      //Verficação: se o caminho guardado leverá ao destino
+                    saidas[um.Origem] = true;
+                int origem = um.Origem;
+                while (origem != lsbOrigem.SelectedIndex)
                 {
-                    caminhos.Empilhar(um);                                   //Caso o caminho atual seja uma solução, é empilhado na pilha caminhos
-                    saidas[um.Origem] = true;                                //A origem do caminho encontrado guarda o destino de outro possível caminho, portanto sua posição correspondente no vetor passa a guardar 'true'
+                    while (!outra2.EstaVazia())                                   //Loop responsável por obter todos os caminhos definitivos que estão na pilha de possíveis caminhos
+                    {
+                        Caminho dois = outra2.Desempilhar();                        //Variável local que guarda o caminho que será verificado
+                        if (saidas[dois.Destino])                                      //Verficação: se o caminho guardado leverá ao destino
+                        {
+                            caminhos.Empilhar(dois);                                   //Caso o caminho atual seja uma solução, é empilhado na pilha caminhos
+                            saidas[dois.Origem] = true;                                //A origem do caminho encontrado guarda o destino de outro possível caminho, portanto sua posição correspondente no vetor passa a guardar 'true'
+                        }
+                        origem = dois.Origem;
+                    }
+                    
                 }
             }
+
+            
 
             if (caminhos.EstaVazia())                                         //Verificação: se a pilha definitiva de caminhos está vazia, alertamos ao usuário que não existe um caminho
                 MessageBox.Show("Não existe nenhum caminho disponível!");     //Mensagem exibida em um message box ao usuário caso não exista um caminho entre as cidades selecionadas

@@ -384,6 +384,8 @@
             // 
             // tpArvore
             // 
+            this.tpArvore.AutoScroll = true;
+            this.tpArvore.AutoScrollMargin = new System.Drawing.Size(1, 0);
             this.tpArvore.Location = new System.Drawing.Point(4, 22);
             this.tpArvore.Name = "tpArvore";
             this.tpArvore.Padding = new System.Windows.Forms.Padding(3);

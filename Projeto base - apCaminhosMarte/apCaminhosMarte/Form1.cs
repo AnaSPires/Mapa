@@ -332,7 +332,7 @@ namespace apCaminhosMarte
         private void tpArvore_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            DesenharArvore(true, arvore.Raiz, (int)tpArvore.Width / 2, 0, Math.PI / 2, Math.PI / 2.5, 300, g);
+            DesenharArvore(true, arvore.Raiz, (int)tpArvore.Width / 2, 0, Math.PI / 2, Math.PI / 2.5, 520, g);
         }
 
         private void DesenharArvore(bool primeiraVez, NoArvore<Cidade> raiz,  int x, int y, double angulo, double incremento,    double comprimento, Graphics g)
@@ -340,17 +340,18 @@ namespace apCaminhosMarte
             int xf, yf;
             if (raiz != null)
             {
-                Pen caneta = new Pen(Color.Red);
+                Pen caneta = new Pen(Color.LightCoral);
+                caneta.Width = 5;
                 xf = (int)Math.Round(x + Math.Cos(angulo) * comprimento);
                 yf = (int)Math.Round(y + Math.Sin(angulo) * comprimento);
                 if (primeiraVez)
                     yf = 25;
                 g.DrawLine(caneta, x, y, xf, yf);
-                DesenharArvore(false, raiz.Esq, xf, yf, Math.PI / 2 + incremento,  incremento * 0.50, comprimento * 0.8, g);
-                DesenharArvore(false, raiz.Dir, xf, yf, Math.PI / 2 - incremento,  incremento * 0.50, comprimento * 0.8, g);
-                SolidBrush preenchimento = new SolidBrush(Color.Blue);
-                g.FillEllipse(preenchimento, xf - 35, yf - 15, 90, 90);
-                g.DrawString(Convert.ToString(raiz.Info.Nome), new Font("Comic Sans", 12), new SolidBrush(Color.Black), xf - 35, yf + 10);
+                DesenharArvore(false, raiz.Esq, xf, yf, Math.PI / 2 + incremento,  incremento * 0.65, comprimento * 0.71, g);
+                DesenharArvore(false, raiz.Dir, xf, yf, Math.PI / 2 - incremento,  incremento * 0.65, comprimento *0.71, g);
+                SolidBrush preenchimento = new SolidBrush(Color.Black);
+                g.FillEllipse(preenchimento, xf - 60, yf - 20, 120, 110);
+                g.DrawString(Convert.ToString(raiz.Info.Nome), new Font("Century Gothic", 11), new SolidBrush(Color.White), xf - 57, yf+20);
             }
         }
 

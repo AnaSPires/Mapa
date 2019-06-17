@@ -86,6 +86,13 @@ namespace apCaminhosMarte
             vetorCaminhos = new object[qtdCaminhos];                         //instanciação do vetor de caminhos, com o tamanho referente à quantidade de camihos encontrada
             int indice = 0;                                                  //Declaração da variável responsável por representar a posição do vetor declarado acima em que o próximo caminho deverá ser armazenado
 
+            PilhaLista<Caminho> outra = caminhos.Clone();
+            while (!outra.EstaVazia())                                   //Loop responsável por obter todos os caminhos definitivos que estão na pilha de possíveis caminhos
+            {
+                Caminho um = outra.Desempilhar();                              //Caso o caminho atual seja uma solução, é empilhado na pilha caminhos
+                    saidas[um.Origem] = true;   
+            }
+
             while (!possiveis.EstaVazia())                                   //Loop responsável por obter todos os caminhos definitivos que estão na pilha de possíveis caminhos
             {
                 Caminho um = possiveis.Desempilhar();                        //Variável local que guarda o caminho que será verificado

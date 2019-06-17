@@ -20,8 +20,7 @@ namespace apCaminhosMarte
         Arvore<Cidade> arvore;   //Declaração da árvore usada
         int[,] matriz;           // Declaração do grafo percorrido na procura de caminhos
         object[] vetorCaminhos;  //vetor usado para guardar, em cada posição, um caminho encontrado e guardado em um vetor de int
-        string[] melhorCaminho;  //Vetor do tipo string que guardará as rotas do melhor caminho econtrado, definido pela distância que seria percorrida
-        int lClick = 0;          // Variável que guarda a linha seleciona pelo usuário para que o caminho escolhido seja exibido no mapa
+        int[] melhorCaminho;       // Variável que guarda a linha seleciona pelo usuário para que o caminho escolhido seja exibido no mapa
 
         public Form1()
         {
@@ -100,7 +99,7 @@ namespace apCaminhosMarte
             else
             {
                 //PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();
-                melhorCaminho = new string[1];
+                melhorCaminho = new int[1];
                 int caminhoAnterior = Int32.MaxValue;
 
                 //aux = aux.Copiar(caminhos);
@@ -196,6 +195,8 @@ namespace apCaminhosMarte
                     string[] nomes = new string[23];
                     int[] cod = new int[23];
                     int n = 0;
+                    int m = 0;
+                    string[] nomeMelhor = new string[1];
                     int distanciaAtual = 0;
 
                     for(int a = 0; a < aimeudeus; a++)
@@ -203,13 +204,8 @@ namespace apCaminhosMarte
                         nomes = new string[23];
                         n = 0;
                         aux = vetorCaminhosSeparados[a];
-
-                        PilhaLista<Caminho> outra = new PilhaLista<Caminho>();
-
-                        while (!aux.EstaVazia())
-                            outra.Empilhar(aux.Desempilhar());
-
-                        aux = outra;
+                        
+                        aux = aux.Inverter();
 
                         while (!aux.EstaVazia())
                         {
@@ -231,11 +227,12 @@ namespace apCaminhosMarte
 
                         if (caminhoAnterior > distanciaAtual)
                         {
-                            melhorCaminho = nomes;
+                            m = indice;
+                            nomeMelhor = nomes;
                             caminhoAnterior = distanciaAtual;
                         }
 
-                        vetorCaminhos[indice] = cod;  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
+                        vetorCaminhos[indice] = cod.Clone();  //Atribuição do vetor de códigos de cidades à posição atual do vetor de caminhos
                         indice++; //Acrescentamos uma unidade à variável que guarda a posição em que o próximo caminho deverá ser guardado
 
                         int index = dataGridView1.Rows.Add();  //Índice da linha adicionada no data grid view
@@ -243,9 +240,11 @@ namespace apCaminhosMarte
 
 
                         qtdCaminhosExibidos++;
+                        cod = new int[23];
+                        distanciaAtual = 0;
                     }
-
-                    ExibirMelhorCaminho(melhorCaminho);
+                    ExibirMelhorCaminho(nomeMelhor);
+                    melhorCaminho = (int[])vetorCaminhos[m];
 
                     //while (!caminhos.EstaVazia())
                     //{
@@ -624,11 +623,11 @@ namespace apCaminhosMarte
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {//Método disparado quando o usuário clica em alguma célula do dataGridView1
-            lClick = e.RowIndex;  //atribuição do índice da linha escolhida pelo usuário à variável global lClick
-            EscreverLinha();      //Chamada do método responsável por desenhar a linha na tela
+            int lClick = e.RowIndex;  //atribuição do índice da linha escolhida pelo usuário à variável global lClick
+            EscreverLinha((int[])vetorCaminhos[lClick]);      //Chamada do método responsável por desenhar a linha na tela
         }
        
-        private void EscreverLinha() //Método responsável por exibir no mapa o caminho selecionado pelo usuário
+        private void EscreverLinha(int[] vetor) //Método responsável por exibir no mapa o caminho selecionado pelo usuário
         {
             pbMapa.Refresh();  //Método responsável por apagar tudo antes exibido em cima do mapa
             Graphics g = pbMapa.CreateGraphics();  //Atribuição do gráfico criado à variável g da classe Graphics
@@ -639,7 +638,7 @@ namespace apCaminhosMarte
             caneta.CustomEndCap = flecha;
             caneta.Width = 3;
 
-            int[] codCidades = (int[])vetorCaminhos[lClick]; //Declaração do vetor responsável por guardar o caminho selecionado por meio dos códigos da cidades que aparecem nas rotas
+            int[] codCidades = vetor; //Declaração do vetor responsável por guardar o caminho selecionado por meio dos códigos da cidades que aparecem nas rotas
             int qtdZero = 0;  //Variável que guarda o número de vezes que o valor 0 foi encontrado no vetor. Seu valor pode ser no máximo 1 já que só é possível passar uma vez pela cidade cujo código é 0
             
             for(int i = 0; i < codCidades.Length-1; i++)  //Loop que percorre cada posição do vetor de códigos de cidades do caminho selecionado
@@ -662,8 +661,17 @@ namespace apCaminhosMarte
 
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            lClick = e.RowIndex;  //atribuição do índice da linha escolhida pelo usuário à variável global lClick
-            EscreverLinha();
+            EscreverLinha(melhorCaminho);
+        }
+
+        private void pbMapa_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

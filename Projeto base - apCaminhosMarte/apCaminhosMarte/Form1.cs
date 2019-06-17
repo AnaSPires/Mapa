@@ -53,11 +53,13 @@ namespace apCaminhosMarte
             bool[] saidas = new bool[arvore.QuantosDados];                  //Vetor do tipo boolean que contém todos as cidades existentes no mapa, cada posição verificando se a cidade atual leva ou não ao destino
             int destino = lsbDestino.SelectedIndex;                         //Variável que guarda o índice da cidade escolhida pelo usuário como destino
 
+
+
             while (!acabouCaminho)                                          //Loop definido pela verificação do encontro ou não de um caminho 
             {
                 for (int c = 0; c < arvore.QuantosDados; c++)               //Loop que se repete pelo número de cidades existentes
                 {
-                    if (matriz[atual, c] != default(int) && !visitados[c])         //Verificação: se o valor da posição atual da matriz é diferente de 0, ou seja, se entre os índices(cidades) definidos existe uma rota 
+                    if (matriz[atual, c] != default(int) && !visitados[atual])         //Verificação: se o valor da posição atual da matriz é diferente de 0, ou seja, se entre os índices(cidades) definidos existe uma rota 
                         aux.Empilhar(new Caminho(atual, c, matriz[atual, c], 0));  //Caso exista uma rota entre essas cidades, essa será empilhada na pilha
                 }
 
@@ -72,13 +74,15 @@ namespace apCaminhosMarte
                         caminhos.Empilhar(um);                               //Empilhamos o novo caminho encontrado na pilha caminhos
                         saidas[um.Origem] = true;                            //Como achamos uma saída (a cidade que leva ao destino), sua posição correspondente receberá 'true'
                         qtdCaminhos++;                                       //Acrescentamos uma unidade à variável qtdCaminhos
-                        visitados[um.Destino] = true;
+                        //visitados[um.Origem] = false;
                     }
                     else
                     {
                         possiveis.Empilhar(um);                              //Ao acharmos uma possível rota, ela é guardada na pilha de possíveis rotas
                         atual = um.Destino;                                  //Mudamos o valor da variável atual, que passará a guardar a origem do caminho que será verificado posteriormente
+                        visitados[um.Origem] = true;
                     }
+
                     visitados[um.Origem] = true;
                 }
             }
@@ -92,7 +96,7 @@ namespace apCaminhosMarte
                 PilhaLista<Caminho> outra2 = possiveis.Clone();
                 Caminho um = outra.Desempilhar();                              //Caso o caminho atual seja uma solução, é empilhado na pilha caminhos
 
-                    saidas[um.Origem] = true;
+                saidas[um.Origem] = true;
                 int origem = um.Origem;
                 while (origem != lsbOrigem.SelectedIndex)
                 {
@@ -106,11 +110,11 @@ namespace apCaminhosMarte
                         }
                         origem = dois.Origem;
                     }
-                    
+
                 }
             }
 
-            
+
 
             if (caminhos.EstaVazia())                                         //Verificação: se a pilha definitiva de caminhos está vazia, alertamos ao usuário que não existe um caminho
                 MessageBox.Show("Não existe nenhum caminho disponível!");     //Mensagem exibida em um message box ao usuário caso não exista um caminho entre as cidades selecionadas

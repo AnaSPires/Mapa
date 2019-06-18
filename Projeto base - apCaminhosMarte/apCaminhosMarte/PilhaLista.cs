@@ -1,5 +1,8 @@
 ﻿using System;
 
+//Ana Clara Sampaio Pires RA: 18201
+//Ariane Paula Barros     RA: 18173
+
 public class PilhaLista<Dado> : IStack<Dado> where Dado : IComparable<Dado>
 {
   private NoLista<Dado> topo;

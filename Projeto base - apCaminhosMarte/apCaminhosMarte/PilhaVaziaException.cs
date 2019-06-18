@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
+//Ana Clara Sampaio Pires RA: 18201
+//Ariane Paula Barros     RA: 18173
 [Serializable]
 internal class PilhaVaziaException : Exception
 {

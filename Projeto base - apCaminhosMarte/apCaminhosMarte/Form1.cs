@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,61 +18,63 @@ namespace apCaminhosMarte
 {
     public partial class Form1 : Form
     {
-        Arvore<Cidade> arvore;      //Declaração da árvore usada
-        int[,] matriz;              // Declaração do grafo percorrido na procura de caminhos
-        object[] vetorCaminhos;     //vetor usado para guardar, em cada posição, um caminho encontrado e guardado em um vetor de int
-        double?[] melhorCaminho;        // Variável que guarda a linha seleciona pelo usuário para que o caminho escolhido seja exibido no mapa
+        Arvore<Cidade> arvore;                                                        //Declaração da árvore usada
+        int[,] matriz;                                                                // Declaração do grafo percorrido na procura de caminhos
+        object[] vetorCaminhos;                                                       //vetor usado para guardar, em cada posição, um caminho encontrado e guardado em um vetor de int
+        double?[] melhorCaminho;                                                      // Variável que guarda a linha seleciona pelo usuário para que o caminho escolhido seja exibido no mapa
       
         public Form1()
         {
             InitializeComponent();
-            arvore = new Arvore<Cidade>();  //Instanciação da árvore 
+            arvore = new Arvore<Cidade>();                                           //Instanciação da árvore 
         }
         
-        private void BtnBuscar_Click(object sender, EventArgs e)             //Método chamado no evento click do btnBuscar
+        private void BtnBuscar_Click(object sender, EventArgs e)                     //Método chamado no evento click do btnBuscar
         {
-            MessageBox.Show("Buscar caminhos entre cidades selecionadas");
+            MessageBox.Show("Buscar caminhos entre cidades selecionadas");           //Mensagem mandada ao usuário ao clique do botão btnBuscar
 
-            pbMapa.Refresh();                                               //Método que "limpa" o mapa, apagando o caminho que possivelmente estava sendo exibido antes
+            pbMapa.Refresh();                                                        //Método que "limpa" o mapa, apagando o caminho que possivelmente estava sendo exibido antes
 
-            dataGridView1.Rows.Clear();                                     //Método que apaga as linhas populadas com o caminho escolhido anteriormente peo usuário
-            dataGridView2.Rows.Clear();                                     //Método que apaga as linhas populadas com o caminho escolhido anteriormente peo usuário
-            dataGridView2.Columns.Clear();
-            PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();                //Declaração e instanciação da pilha de caminhos que guardará todos os caminhos encontrados que levarão ao destino desejado
-            PilhaLista<Caminho> possiveis = new PilhaLista<Caminho>();               //Declaração e instanciação da pilha de caminhos que guardará todos os possíveis caminhos, cada rota que possivelmente levará ao destino escolhido
+            dataGridView1.Rows.Clear();                                              //Método que apaga as linhas populadas com o caminho escolhido anteriormente peo usuário
+            dataGridView2.Rows.Clear();                                              //Método que apaga as linhas populadas com o caminho escolhido anteriormente peo usuário
+            dataGridView2.Columns.Clear();                                           //Método que deleta as colunas antes exibidas no dataGridView
+            PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();               //Declaração e instanciação da pilha de caminhos que guardará todos os caminhos encontrados que levarão ao destino desejado
+            PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();               //Declaração e instanciação da pilha de caminhos que guardará todos os possíveis caminhos, cada rota que possivelmente levará ao destino escolhido
             PilhaLista<Caminho> aux = new PilhaLista<Caminho>();                     //Declaração e instanciação da pilha de caminhos que inicialmente guardará todos os caminhos que tem como início a origem determinada
 
             int qtdCaminhos = 0;                                                     //Variável que guarda o número de caminhos encontrados, usada mais tarde na instanciação do vetor de caminhos
             int atual = lsbOrigem.SelectedIndex;                                     //Variável que guarda o índice da cidade escolhida pelo usuário como origem
             bool acabouCaminho = false;                                              //Variável que guarda 'true' se a cidade destino foi alcançada ou 'false' caso não
             bool[] visitados = new bool[arvore.QuantosDados];                        //Vetor do tipo boolean que guardará true sempre que a cidade correspondente foi verificada/visitada e false em caso contrário   
-            int nCidades = 0;
-            int dCidades = 0;
-            int distancia = 0;
-            string[] nomeMelhor = new string[arvore.QuantosDados];
+            int nCidades = 0;                                                        //Variável que guarda o número de cidades que o caminho com maior cidades contém
+            int menorCaminho = Int32.MaxValue;                                                    //Variável que guarda a maior distância encontrada
+            int distancia;                                                      //Variável que guarda a distância percorrida no caminho atualmente analisado
+            string[] nomeMelhor = new string[arvore.QuantosDados];                   //Vetor de string que guarda os nomes das cidades contidas no melhor caminho encontrado
+          
+            vetorCaminhos = new object[100];
 
-            PilhaLista<Caminho>[]  vetPilha = new PilhaLista<Caminho>[33];           //instanciação do vetor de caminhos, com o tamanho referente à quantidade de camihos encontrada
-            vetorCaminhos = new object[33];
-            int indice = 0;                                                          //Declaração da variável responsável por representar a posição do vetor declarado acima em que o próximo caminho deverá ser armazenado
-
-            int qtd = arvore.QuantosDados;
+            int qtd = arvore.QuantosDados;                                           //Variável que guarda a quantidade de cidades contidas na árvore criada  
 
             while (!acabouCaminho)                                                   //Loop definido pela verificação do encontro ou não de um caminho 
             {
-                bool empilhou = false;
+                distancia = 0;
+                bool empilhou = false;                                               //Variável boolean que verifica se algum caminho foi empilhado com a origem atual
                 for (int c = 0; c < qtd; c++)                                        //Loop que se repete pelo número de cidades existentes
                 {
                     if (matriz[atual, c] != default(int))                            //Verificação: se o valor da posição atual da matriz é diferente de 0, ou seja, se entre os índices(cidades) definidos existe uma rota 
                     {
-                        aux.Empilhar(new Caminho(atual, c, matriz[atual, c], 0));    //Caso exista uma rota entre essas cidades, essa será empilhada na pilha
-                        empilhou = true;
+                        aux.Empilhar(new Caminho(atual, c, matriz[atual, c]));       //Caso exista uma rota entre essas cidades, essa será empilhada na pilha
+                        empilhou = true;                                             //Atribuição de valor true para a variável 'empilhou', já que um posssível caminho foi encontrado
                     }
                 }
 
-                if (!empilhou)
+                if (!empilhou)                                                       //Verificação: se nenhum possível caminho foi encontrado desta vez
                 {
-                    while (!aux.EstaVazia() &&  !possiveis.EstaVazia() && aux.OTopo().Origem != possiveis.OTopo().Destino)
-                        possiveis.Desempilhar();
+                    if (!aux.EstaVazia())                                           //se a pilha aux não estiver vazia
+                    {
+                        while (!aux.EstaVazia() && !caminhos.EstaVazia() && aux.OTopo().Origem != caminhos.OTopo().Destino) //se a pilha "aux" e a pilha "caminhos" não estiverem vazia e a origem do topo de "aux" for diferente da origem do topo de "caminhos"
+                            caminhos.Desempilhar();                                 //Caso nada tenha sido empilhado, devemos desempilhar da pilha caminhos até que a origem do caminho no topo da pilha aux seja igual ao destino do caminho do topo da pilha caminhos 
+                    }
                 }
 
 
@@ -83,73 +86,64 @@ namespace apCaminhosMarte
 
                     if (um.Destino == lsbDestino.SelectedIndex)                    //Verificação: se um caminho foi encontrado
                     {
-                        possiveis.Empilhar(um);
+                        caminhos.Empilhar(um);                                      //Empilha na pilha "caminhos"
 
-                        if (possiveis.Tamanho() > nCidades)
-                            nCidades = possiveis.Tamanho();
+                        if (caminhos.Tamanho() > nCidades)                          //Se o tamanho da pilha "caminhos" atual, a quantidade de cidades, for maior do que a maior quantidades de cidades em um caminho ("nCidades")
+                            nCidades = caminhos.Tamanho();                          //A quantidade máxima de cidades em um caminho recebe a quantidade de cidades no caminho atual
+                        
+                        aux2 = caminhos.Clone().Inverter();                         //A pilha "aux2" recebe o clone da pilha "caminhos" invertida
 
-                        vetPilha[indice] = possiveis.Clone().Inverter();
-                        caminhos = possiveis.Clone().Inverter();
+                        while (!aux.EstaVazia() && !caminhos.EstaVazia() && aux.OTopo().Origem != caminhos.OTopo().Destino) //se a pilha "aux" e a pilha "caminhos" não estiverem vazia e a origem do topo de "aux" for diferente da origem do topo de "caminhos"
+                            caminhos.Desempilhar();                                 //Caso nada tenha sido empilhado, devemos desempilhar da pilha caminhos até que a origem do caminho no topo da pilha aux seja igual ao destino do caminho do topo da pilha caminhos 
 
-                        while (!aux.EstaVazia() && !possiveis.EstaVazia() && aux.OTopo().Origem != possiveis.OTopo().Destino)
-                            possiveis.Desempilhar();
+                        caminhos.Empilhar(um);
+                        atual = um.Destino; ;                                       //variável atual recebe o destino do topo de "aux"
 
-                        possiveis.Empilhar(um);
-                        atual = um.Destino;
+                        int i = 0;                                                  //Variável que armazena o indíce dos vetores
+                        dataGridView1.RowCount++;                                   //Aumenta a quantidade de linhas do DataGridView
+                        dataGridView1.ColumnCount = nCidades + 1;                   //A quantidade de colunas do DataGridView recebe o maior número de cidades de todos os caminhos possíveis
 
-                        int i = 0;
-                        dataGridView1.RowCount++;
-                        dataGridView1.ColumnCount = nCidades + 1;
+                        double?[] cod = new double?[arvore.QuantosDados];           //Representa um vetor que armazena os códigos de todas as cidades do caminho atual em ordem
+                        string[] nomes = new string[arvore.QuantosDados];           //Representa um vetor que armazena os nomes de todas as cidades do caminho atual em ordem
 
-                        double?[] cod = new double?[arvore.QuantosDados];
-                        string[] nomes = new string[arvore.QuantosDados];
-
-                        Caminho c = new Caminho();
-                        while (!caminhos.EstaVazia())
+                        Caminho c = new Caminho();                                  //Representa a rota atual
+                        while (!aux2.EstaVazia())                                   //Enquanto a pilha "aux2" estiver vazia
                         {
-                             c = caminhos.Desempilhar();
-                            Cidade cid = arvore.BuscaPorDado(new Cidade(c.Origem));
-                            nomes[i] = cid.Nome;
-                            cod[i] = cid.Cod;
-                            distancia += c.Distancia;
-                            dataGridView1[i++, dataGridView1.RowCount - 1].Value = cid.Nome;
-                            
-                            //dataGridView1[++i, dataGridView1.RowCount - 1].Value = c.Destino;
+                             c = aux2.Desempilhar();                               //A rota atual recebe o topo de "aux2" e desempilha esta
+                            Cidade cid = arvore.BuscaPorDado(new Cidade(c.Origem));//Representa a cidade de origem da rota atual
+                            nomes[i] = cid.Nome;                                    //Armazena o nome desta cidade na posição atual do vetor de nomes
+                            cod[i] = cid.Cod;                                       //Armazena o codigo desta cidade na posição atual do vetor de códigos
+                            distancia += c.Distancia;                               //A distância total do caminho soma a distância da rota atual
+                            dataGridView1[i++, dataGridView1.RowCount - 1].Value = cid.Nome;//"Escreve" o nome da cidade atual no DataGridView
                         }
                        
-                        nomes[i] = (arvore.BuscaPorDado(new Cidade(c.Destino))).Nome;
-                        cod[i] = (arvore.BuscaPorDado(new Cidade(c.Destino))).Cod;
-                        dataGridView1[i, dataGridView1.RowCount - 1].Value = nomes[i];
+                        nomes[i] = (arvore.BuscaPorDado(new Cidade(c.Destino))).Nome;//Guarda o nome da última cidade no vetor de nomes
+                        cod[i] = (arvore.BuscaPorDado(new Cidade(c.Destino))).Cod;   //Guarda o codigo da última cidade no vetor de códigos
+                        dataGridView1[i, dataGridView1.RowCount - 1].Value = nomes[i];//"Escreve" o nome da última cidade no DataGridView
 
-                        if (distancia > dCidades)
+                        if (distancia < menorCaminho)                                 //
                         {
-                            dCidades = distancia;
+                            menorCaminho = distancia;
                             melhorCaminho = cod;
                             nomeMelhor = new string[i];
-                            nomeMelhor = nomes;
-                            
+                            nomeMelhor = nomes;                            
                         }
                         
-                        vetorCaminhos[indice] = cod;
+                        vetorCaminhos[qtdCaminhos] = cod;
 
                         qtdCaminhos++;                                        //Acrescentamos uma unidade à variável qtdCaminhos
-                        indice++;                                               
                     }
                     else
                     {
-                        possiveis.Empilhar(um);                              //Ao acharmos uma possível rota, ela é guardada na pilha de possíveis rotas
+                        caminhos.Empilhar(um);                              //Ao acharmos uma possível rota, ela é guardada na pilha de possíveis rotas
                         atual = um.Destino;                                  //Mudamos o valor da variável atual, que passará a guardar a origem do caminho que será verificado posteriormente
-
                     }  
-
                 }
             }
             if (qtdCaminhos == 0)
                 MessageBox.Show("Não existe caminho!");
             else
                 ExibirMelhorCaminho(nomeMelhor);
-
-
         }
 
         private void ExibirMelhorCaminho(string[] vet)                        //Método responsável por exibir o melhor caminho dentre todos os achados no dataGridView2
@@ -157,7 +151,7 @@ namespace apCaminhosMarte
             if (dataGridView2.RowCount == 1)                                  //Verificação: se o dataGridView2 contiver uma linha, então sabemos que um caminho foi exibido nela, e a deletamos
                 dataGridView2.Rows.RemoveAt(0);                               //Remoção da linha que antes guardava o melhor caminho anteriormente pesquisado
             
-            for (int i = 0; i < vet.Length && vet[i] != null; i++)                        //Loop para adicionarmos colunas de acordo com o número de cidades do arquivo
+            for (int i = 0; i < vet.Length && vet[i] != null; i++)            //Loop para adicionarmos colunas de acordo com o número de cidades do arquivo
                 dataGridView2.Columns.Add("x", "Cidade");
 
             int index = dataGridView2.Rows.Add();                             //Índice da linha adicionada no data grid view
@@ -185,23 +179,16 @@ namespace apCaminhosMarte
             string linha2 = aux.ReadLine();
             Cidade cid = new Cidade(linha);
             Cidade cid2 = new Cidade(linha2);
+            var qtdLinhas = File.ReadLines("CidadesMarteOrdenado.txt").Count();
 
-            //if (lsbOrigem.Items.Count == arvore.QuantosDados)
-            //{
-            //    lsbDestino.Items.Add(n + "-" + cid2.Nome);
-            //    lsbOrigem.Items.Add(n + "-" + cid2.Nome);
-
-            //    arvore.Raiz = new NoArvore<Cidade>(cid);
-            //}
-
-            if (lsbOrigem.Items.Count < 23)
+            if (lsbOrigem.Items.Count < qtdLinhas)
             {
                 lsbDestino.Items.Add(n + "-" + cid2.Nome);
                 lsbOrigem.Items.Add(n + "-" + cid2.Nome);
 
                 arvore.Raiz = new NoArvore<Cidade>(cid);
             }
-           
+
             Graphics grafico = e.Graphics;
             Point p = new Point();
             p.X = cid.X * pbMapa.Width / 4096;
@@ -219,15 +206,7 @@ namespace apCaminhosMarte
                 cid = new Cidade(linha);
                 cid2 = new Cidade(linha2);
 
-                //if (lsbOrigem.Items.Count >= arvore.QuantosDados)
-                //{
-                //    lsbDestino.Items.Add(n + "-" + cid2.Nome);
-                //    lsbOrigem.Items.Add(n + "-" + cid2.Nome);
-
-                //    arvore.Incluir(cid);
-                //}
-
-                if (lsbOrigem.Items.Count < 23)
+                if (lsbOrigem.Items.Count < qtdLinhas)
                 {
                     lsbDestino.Items.Add(n + "-" + cid2.Nome);
                     lsbOrigem.Items.Add(n + "-" + cid2.Nome);
@@ -298,31 +277,31 @@ namespace apCaminhosMarte
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {//Método disparado quando o usuário clica em alguma célula do dataGridView1
+        {                                                              //Método disparado quando o usuário clica em alguma célula do dataGridView1
             int lClick = e.RowIndex;                                   //atribuição do índice da linha escolhida pelo usuário à variável global lClick
-            EscreverLinha((double?[])vetorCaminhos[lClick]);               //Chamada do método responsável por desenhar a linha na tela
+            EscreverLinha((double?[])vetorCaminhos[lClick]);           //Chamada do método responsável por desenhar a linha na tela
         }
        
-        private void EscreverLinha(double?[] vetor)                        //Método responsável por exibir no mapa o caminho selecionado pelo usuário
+        private void EscreverLinha(double?[] vetor)                    //Método responsável por exibir no mapa o caminho selecionado pelo usuário
         {
             pbMapa.Refresh();                                          //Método responsável por apagar tudo antes exibido em cima do mapa
             Graphics g = pbMapa.CreateGraphics();                      //Atribuição do gráfico criado à variável g da classe Graphics
             Pen caneta = new Pen(Color.Black);                         //Código que cria a variável que 'desenha' no mapa
 
             //Código que personaliza a linha que liga as cidades
-            AdjustableArrowCap flecha = new AdjustableArrowCap(3, 3);
+            AdjustableArrowCap flecha = new AdjustableArrowCap(4, 4);
             caneta.CustomEndCap = flecha;
             caneta.Width = 3;
 
-            double?[] codCidades = vetor;                                  //Declaração do vetor responsável por guardar o caminho selecionado por meio dos códigos da cidades que aparecem nas rotas                                         //Variável que guarda o número de vezes que o valor 0 foi encontrado no vetor. Seu valor pode ser no máximo 1 já que só é possível passar uma vez pela cidade cujo código é 0
+            double?[] codCidades = vetor;                              //Declaração do vetor responsável por guardar o caminho selecionado por meio dos códigos da cidades que aparecem nas rotas                                         //Variável que guarda o número de vezes que o valor 0 foi encontrado no vetor. Seu valor pode ser no máximo 1 já que só é possível passar uma vez pela cidade cujo código é 0
             
-            for(int i = 0; i < codCidades.Length-1 ; i++)               //Loop que percorre cada posição do vetor de códigos de cidades do caminho selecionado
+            for(int i = 0; i < codCidades.Length-1 ; i++)              //Loop que percorre cada posição do vetor de códigos de cidades do caminho selecionado
             {
                 if (codCidades[i] != null && codCidades[i + 1] != null)
                 {
                     Cidade cid = arvore.BuscaPorDado(new Cidade(Convert.ToInt32(codCidades[i])));
                     int xp = cid.X * pbMapa.Width / 4096;                   //Variável que guarda a coordenada X da cidade origem
-                    int yp = cid.Y * pbMapa.Height / 2048;                 //Variável que guarda a coordenada Y da cidade origem
+                    int yp = cid.Y * pbMapa.Height / 2048;                  //Variável que guarda a coordenada Y da cidade origem
 
                     Cidade cid2 = arvore.BuscaPorDado(new Cidade(Convert.ToInt32(codCidades[i + 1])));
                     int xf = cid2.X * pbMapa.Width / 4096;                  //Variável que guarda a coordenada X da cidade destino

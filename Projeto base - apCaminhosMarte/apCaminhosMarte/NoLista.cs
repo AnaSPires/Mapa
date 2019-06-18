@@ -1,4 +1,7 @@
 ﻿using System;
+
+//Ana Clara Sampaio Pires RA: 18201
+//Ariane Paula Barros     RA: 18173
 public class NoLista<Dado> where Dado : IComparable<Dado>
 { 
     Dado info;

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//Ana Clara Sampaio Pires RA: 18201
+//Ariane Paula Barros     RA: 18173
 namespace apCaminhosMarte
 {
   public class NoArvore<Tipo> : IComparable<NoArvore<Tipo>>

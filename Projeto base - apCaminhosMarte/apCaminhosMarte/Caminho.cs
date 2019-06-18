@@ -16,6 +16,13 @@ class Caminho : IComparable<Caminho>
         Distancia = distancia;
         QtdCaminhos = qtd;
     }
+    public Caminho()  //Contrutor comum de uma instância da classe Caminho
+    {
+        Destino = 0;
+        Origem = 0;
+        Distancia = 0;
+        QtdCaminhos = 0;
+    }
 
     public int Destino { get => destino; set => destino = value; }
     public int Origem { get => origem; set => origem = value; }

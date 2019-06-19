@@ -38,8 +38,8 @@ namespace apCaminhosMarte
             dataGridView1.Rows.Clear();                                              //Método que apaga as linhas populadas com o caminho escolhido anteriormente peo usuário
             dataGridView2.Rows.Clear();                                              //Método que apaga as linhas populadas com o caminho escolhido anteriormente peo usuário
             dataGridView2.Columns.Clear();                                           //Método que deleta as colunas antes exibidas no dataGridView
-            PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();               //Declaração e instanciação da pilha de caminhos que guardará todos os caminhos encontrados que levarão ao destino desejado
-            PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();               //Declaração e instanciação da pilha de caminhos que guardará todos os possíveis caminhos, cada rota que possivelmente levará ao destino escolhido
+            PilhaLista<Caminho> aux2 = new PilhaLista<Caminho>();                    //Declaração e instanciação da pilha de caminhos que guardará todos os caminhos encontrados que levarão ao destino desejado
+            PilhaLista<Caminho> caminhos = new PilhaLista<Caminho>();                //Declaração e instanciação da pilha de caminhos que guardará todos os possíveis caminhos, cada rota que possivelmente levará ao destino escolhido
             PilhaLista<Caminho> aux = new PilhaLista<Caminho>();                     //Declaração e instanciação da pilha de caminhos que inicialmente guardará todos os caminhos que tem como início a origem determinada
 
             int qtdCaminhos = 0;                                                     //Variável que guarda o número de caminhos encontrados, usada mais tarde na instanciação do vetor de caminhos
@@ -47,8 +47,8 @@ namespace apCaminhosMarte
             bool acabouCaminho = false;                                              //Variável que guarda 'true' se a cidade destino foi alcançada ou 'false' caso não
             bool[] visitados = new bool[arvore.QuantosDados];                        //Vetor do tipo boolean que guardará true sempre que a cidade correspondente foi verificada/visitada e false em caso contrário   
             int nCidades = 0;                                                        //Variável que guarda o número de cidades que o caminho com maior cidades contém
-            int menorCaminho = Int32.MaxValue;                                                    //Variável que guarda a maior distância encontrada
-            int distancia;                                                      //Variável que guarda a distância percorrida no caminho atualmente analisado
+            int menorCaminho = Int32.MaxValue;                                       //Variável que guarda a menor distância encontrada
+            int distancia;                                                           //Variável que guarda a distância percorrida no caminho atualmente analisado
             string[] nomeMelhor = new string[arvore.QuantosDados];                   //Vetor de string que guarda os nomes das cidades contidas no melhor caminho encontrado
           
             vetorCaminhos = new object[100];
@@ -70,13 +70,12 @@ namespace apCaminhosMarte
 
                 if (!empilhou)                                                       //Verificação: se nenhum possível caminho foi encontrado desta vez
                 {
-                    if (!aux.EstaVazia())                                           //se a pilha aux não estiver vazia
+                    if (!aux.EstaVazia())                                            //se a pilha aux não estiver vazia
                     {
                         while (!aux.EstaVazia() && !caminhos.EstaVazia() && aux.OTopo().Origem != caminhos.OTopo().Destino) //se a pilha "aux" e a pilha "caminhos" não estiverem vazia e a origem do topo de "aux" for diferente da origem do topo de "caminhos"
-                            caminhos.Desempilhar();                                 //Caso nada tenha sido empilhado, devemos desempilhar da pilha caminhos até que a origem do caminho no topo da pilha aux seja igual ao destino do caminho do topo da pilha caminhos 
+                            caminhos.Desempilhar();                                  //Caso nada tenha sido empilhado, devemos desempilhar da pilha caminhos até que a origem do caminho no topo da pilha aux seja igual ao destino do caminho do topo da pilha caminhos 
                     }
                 }
-
 
                 if (aux.EstaVazia())                                               //Verificação: se a pilha aux não tiver elementos, então não é possível prosseguir a procura por um caminho
                     acabouCaminho = true;                                          //Portanto, para sair do loop, a variável acabouCaminho recebe true
@@ -93,11 +92,14 @@ namespace apCaminhosMarte
                         
                         aux2 = caminhos.Clone().Inverter();                         //A pilha "aux2" recebe o clone da pilha "caminhos" invertida
 
-                        while (!aux.EstaVazia() && !caminhos.EstaVazia() && aux.OTopo().Origem != caminhos.OTopo().Destino) //se a pilha "aux" e a pilha "caminhos" não estiverem vazia e a origem do topo de "aux" for diferente da origem do topo de "caminhos"
-                            caminhos.Desempilhar();                                 //Caso nada tenha sido empilhado, devemos desempilhar da pilha caminhos até que a origem do caminho no topo da pilha aux seja igual ao destino do caminho do topo da pilha caminhos 
+                        if (!aux.EstaVazia())                                            //se a pilha aux não estiver vazia
+                        {
+                            while (!aux.EstaVazia() && !caminhos.EstaVazia() && aux.OTopo().Origem != caminhos.OTopo().Destino) //se a pilha "aux" e a pilha "caminhos" não estiverem vazia e a origem do topo de "aux" for diferente da origem do topo de "caminhos"
+                                caminhos.Desempilhar();                                  //Caso nada tenha sido empilhado, devemos desempilhar da pilha caminhos até que a origem do caminho no topo da pilha aux seja igual ao destino do caminho do topo da pilha caminhos 
+                        }
 
-                        caminhos.Empilhar(um);
-                        atual = um.Destino; ;                                       //variável atual recebe o destino do topo de "aux"
+                        caminhos.Empilhar(um);                                      
+                        atual = um.Destino;                                         //variável atual recebe o destino do topo de "aux"
 
                         int i = 0;                                                  //Variável que armazena o indíce dos vetores
                         dataGridView1.RowCount++;                                   //Aumenta a quantidade de linhas do DataGridView
@@ -121,29 +123,29 @@ namespace apCaminhosMarte
                         cod[i] = (arvore.BuscaPorDado(new Cidade(c.Destino))).Cod;   //Guarda o codigo da última cidade no vetor de códigos
                         dataGridView1[i, dataGridView1.RowCount - 1].Value = nomes[i];//"Escreve" o nome da última cidade no DataGridView
 
-                        if (distancia < menorCaminho)                                 //
+                        if (distancia < menorCaminho)                                 //Verificação: se a distância percorrida nesse caminho for menor que a menor distância já encontrada
                         {
-                            menorCaminho = distancia;
-                            melhorCaminho = cod;
-                            nomeMelhor = new string[i];
-                            nomeMelhor = nomes;                            
-                        }
+                            menorCaminho = distancia;                                 //A variável menorCaminho passa a guardar a distância atual 
+                            melhorCaminho = cod;                                      //Como a distância atual é a menor encontrada, o melhor caminho passa a ser o atual, portanto o valor do vetor de códigos melhorCaminho recebe o vator de códigos atual
+                            nomeMelhor = new string[i];                               //Instanciação do vetor que guarda os nomes das cidades que o caminho atual contém
+                            nomeMelhor = nomes;                                       //Atribuição do vetor de nomes das cidades percorridas neste caminho ao vetor que guarda nomes de cidades pelas quais passa o melhor caminho
+                        } //Caso não seja menor, nada acontece, para que a variável contenha o menor valor de todos corretamente
                         
-                        vetorCaminhos[qtdCaminhos] = cod;
+                        vetorCaminhos[qtdCaminhos] = cod;                        //Atribuição do vetor de códigos atual à posição atual do vetorCaminhos, para que este guarde os códigos das cidades percorridas nesse caminho
 
-                        qtdCaminhos++;                                        //Acrescentamos uma unidade à variável qtdCaminhos
+                        qtdCaminhos++;                                           //Acrescentamos uma unidade à variável qtdCaminhos
                     }
                     else
                     {
-                        caminhos.Empilhar(um);                              //Ao acharmos uma possível rota, ela é guardada na pilha de possíveis rotas
-                        atual = um.Destino;                                  //Mudamos o valor da variável atual, que passará a guardar a origem do caminho que será verificado posteriormente
+                        caminhos.Empilhar(um);                                  //Ao acharmos uma possível rota, ela é guardada na pilha de possíveis rotas
+                        atual = um.Destino;                                     //Mudamos o valor da variável atual, que passará a guardar a origem do caminho que será verificado posteriormente
                     }  
                 }
             }
-            if (qtdCaminhos == 0)
-                MessageBox.Show("Não existe caminho!");
-            else
-                ExibirMelhorCaminho(nomeMelhor);
+            if (qtdCaminhos == 0)                                               //Caso a quantidade de caminhos encontrados seja zero, não existe uma rota entre as cidades escolhidas, portanto, alertamos o usuário 
+                MessageBox.Show("Não existe caminho!");                         //Mensagem exibida ao usuário para alertá-lo da inexistência de caminhos
+            else                                                                //Caso a quantidade de caminhos encontrados não seja zero, achamos pelo menos um caminho
+                ExibirMelhorCaminho(nomeMelhor);                                //Chamada de método para exibir o melhor caminho encontrado
         }
 
         private void ExibirMelhorCaminho(string[] vet)                        //Método responsável por exibir o melhor caminho dentre todos os achados no dataGridView2
@@ -158,76 +160,76 @@ namespace apCaminhosMarte
             dataGridView2.Rows[index].SetValues(vet);                         //Atribuição do caminho atual à linha adicionada
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void pbMapa_Paint(object sender, PaintEventArgs e)
         {
             LerArquivo(e);                                                      //Chamada do método responsável por ler, criar a árvore e exibir no mapa a localização e os nomes das cidades no arquivo
         }
 
-        private void LerArquivo(PaintEventArgs e)
+        private void LerArquivo(PaintEventArgs e)                                //Método responsável por ler os arquivos e criar a árvore usada pelo programa, juntamente com matriz
         {
-            int n = 0;
-            int qtdCidades = 1;
+            int n = 0;                                                           //
+            int qtdCidades = 1;                                                  //Variável local que guarda o número de cidades a serem lidas do arquivo
 
-            StreamReader arq = new StreamReader("CidadesMarte.txt", Encoding.UTF7);
-            StreamReader aux = new StreamReader("CidadesMarteOrdenado.txt", Encoding.UTF7);
-            string linha = arq.ReadLine();
-            string linha2 = aux.ReadLine();
-            Cidade cid = new Cidade(linha);
-            Cidade cid2 = new Cidade(linha2);
-            var qtdLinhas = File.ReadLines("CidadesMarteOrdenado.txt").Count();
+            StreamReader arq = new StreamReader("CidadesMarte.txt", Encoding.UTF7);         //Criação do StreamReader responsável por ler o arquivo que contém as cidades, seus códigos, nomes e localização no mapa
+            StreamReader aux = new StreamReader("CidadesMarteOrdenado.txt", Encoding.UTF7); //Criação do StreamReader responsável por ler o arquivo que contém os nomes cidades, que são exibidas ordenadamente de acordo com seus respectivos códigos
+            string linha = arq.ReadLine();                                                  //Variável tipo string que guarda todas as informações lidas no primeiro arquivo mencionado
+            string linha2 = aux.ReadLine();                                                 //Variável tipo string que guarda todas as informações lidas no segundo arquivo mencionado
+            Cidade cid = new Cidade(linha);                                                 //Criação da primeira cidade que é lida no arquivo desordenado de acordo com as informações lidas na linha atual e por meio do construtor adaptado à esse tipo de construção, na classe Cidade 
+            Cidade cid2 = new Cidade(linha2);                                               //Criação da primeira cidade que aparece no arquivo ordenado, de acordo com as informações lidas na linha atual e por meio do construtor adaptado à esse tipo de construção, na classe Cidade 
+            var qtdLinhas = File.ReadLines("CidadesMarteOrdenado.txt").Count();             //Variável que guarda a quantidade de linhas que tem o primeiro arquivo; essa quantidade de linhas corresponde ao número de cidades que serão registradas
 
-            if (lsbOrigem.Items.Count < qtdLinhas)
-            {
-                lsbDestino.Items.Add(n + "-" + cid2.Nome);
-                lsbOrigem.Items.Add(n + "-" + cid2.Nome);
+            if (lsbOrigem.Items.Count < qtdLinhas)                                          //Verificação: se o número de itens do listbox for menor que o número de cidades que esrão/foram registradas
+            {//Caso seja, podemos adicionar nos dois listbox
+                lsbDestino.Items.Add(n + "-" + cid2.Nome);            //Adição do código e nome da cidade, respectivamente, no listbox de origens
+                lsbOrigem.Items.Add(n + "-" + cid2.Nome);             //Adição do código e nome da cidade, respectivamente, no listbox de destinos
 
-                arvore.Raiz = new NoArvore<Cidade>(cid);
-            }
+                arvore.Raiz = new NoArvore<Cidade>(cid);              //Como essa é a primeira cidade lida, esta deve ser tida como raiz da 
+                                                                      //árvore do programa; Como uma árvore criada a partir de um arquivo ordenado é "tombada" para a direita, por conta da contrução de esquerda(menores valores) e direita(maiores valores), a cidade passada como referência é a cid, adquirida pela leitura do arquivo desordenado
+            }//Caso não seja, nada é adicionado ou alterado
+             
+            Graphics grafico = e.Graphics;                            //Atribuição do gráfico adquirido pelo parâmetro à variável grafico do tipo Graphics, responsável pela alteração do gráfico exibido ao usuário
+            Point p = new Point();                                    //Instanciação de um Point, necessário na exibição dos pontos no gráficos, representantes das localizações das cidades
+            p.X = cid.X * pbMapa.Width / 4096;                        //Atribuição da localização, no eixo X, do ponto p                
+            p.Y = cid.Y * pbMapa.Height / 2048;                       //Atribuição da localização, no eixo Y, do ponto p         
+            SolidBrush pincel = new SolidBrush(Color.Black);          //Declaração de um SolidBrush, responsávl por escrever os nomes das cidades
 
-            Graphics grafico = e.Graphics;
-            Point p = new Point();
-            p.X = cid.X * pbMapa.Width / 4096;
-            p.Y = cid.Y * pbMapa.Height / 2048;
-            SolidBrush pincel = new SolidBrush(Color.Black);
-
+            //Método que desenha no gráfico o nome da cidade criada
             grafico.DrawString(cid.Nome, new Font("Arial", 10, FontStyle.Bold), pincel, new Point(p.X, p.Y - 20));
+            //Método que desenha no gráfico o ponto representando a localização da cidade criada
             grafico.FillEllipse(pincel, new RectangleF(p.X, p.Y, 8, 8));
 
-            while (!arq.EndOfStream)
+            while (!arq.EndOfStream)           //Loop: enquanto o arquivo não for totalmente lido; Como os dois arquivos tem necessariamente o mesmo tamanho, é possível verificar o término de qualquer um dois dois
             {
                 n++;
-                linha = arq.ReadLine();
-                linha2 = aux.ReadLine();
-                cid = new Cidade(linha);
-                cid2 = new Cidade(linha2);
+                linha = arq.ReadLine();        //Atribuição à variável linha as informações lidas na linha atual do arquivo
+                linha2 = aux.ReadLine();       //Atribuição à variável linha2 as informações lidas na linha atual do segundo arquivo
+                cid = new Cidade(linha);       //Criação da  cidade que foi atualmente lida no arquivo desordenado de acordo com as informações lidas na linha atual e por meio do construtor adaptado à esse tipo de construção, na classe Cidade 
+                cid2 = new Cidade(linha2);     //Criação da  cidade que foi atualmente no arquivo ordenado, de acordo com as informações lidas na linha atual e por meio do construtor adaptado à esse tipo de construção, na classe Cidade 
 
-                if (lsbOrigem.Items.Count < qtdLinhas)
-                {
-                    lsbDestino.Items.Add(n + "-" + cid2.Nome);
-                    lsbOrigem.Items.Add(n + "-" + cid2.Nome);
+                if (lsbOrigem.Items.Count < qtdLinhas)                    //Verificação: se o número de itens do listbox for menor que o número de cidades que esrão/foram registradas
+                {//Caso seja, podemos adicionar nos dois listbox
+                    lsbDestino.Items.Add(n + "-" + cid2.Nome);            //Adição do código e nome da cidade, respectivamente, no listbox de origens
+                    lsbOrigem.Items.Add(n + "-" + cid2.Nome);             //Adição do código e nome da cidade, respectivamente, no listbox de destinos
 
-                    arvore.Incluir(cid);
-                }
+                    arvore.Incluir(cid);                                  //Inclusão da cidade (do arquivo desordenado, para a construção estrutural correta da árvore) lida à árvore
+                }//Caso não seja, nada é adicionado ou alterado
 
-                p = new Point();
-                p.X = cid.X * pbMapa.Width / 4096;
-                p.Y = cid.Y * pbMapa.Height / 2048;
+                p = new Point();                                          //Instanciação de um novo Point, que irá representar a localização da cidade lida atualmente
+                p.X = cid.X * pbMapa.Width / 4096;                        //Atribuição da localização, no eixo X, do ponto p                
+                p.Y = cid.Y * pbMapa.Height / 2048;                       //Atribuição da localização, no eixo Y, do ponto p         
+                pincel = new SolidBrush(Color.Black);                     //Declaração de um SolidBrush, responsávl por escrever os nomes das cidades
+                //Método que desenha no gráfico o nome da cidade criada
                 grafico.DrawString(cid.Nome, new Font("Arial", 10, FontStyle.Bold), pincel, new Point(p.X, p.Y - 20));
-                pincel = new SolidBrush(Color.Black);
+                //Método que desenha no gráfico o ponto representando a localização da cidade criada
                 grafico.FillEllipse(pincel, new RectangleF(p.X, p.Y, 8, 8));
 
-                qtdCidades++;
+                qtdCidades++;                                             //Adição de uma unidade à variável que guarda a quantidade de cidades lidas 
             }
 
-            arq.Close();
-            aux.Close();
+            arq.Close();                                                  //Encerramento da leitura do arquivo, fechando-o
+            aux.Close();                                                  //Encerramento da leitura do arquivo, fechando-o
 
-            CriarMatriz();
+            CriarMatriz();                                                //Chamada do método responsável por instanciar e preencher a matriz, que é usada na verificação da existência de uma rota ou não entre duas cidades
         }
 
         public void CriarMatriz()                                           //Método para criar o grafo
@@ -235,29 +237,29 @@ namespace apCaminhosMarte
             matriz = new int[arvore.QuantosDados, arvore.QuantosDados];     //essa matriz será usada para armazenar as distâncias entre cada cidade
 
             //Leitura do arquivo que contém as cidades e a distância entre elas
-            StreamReader arq = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);           
+            StreamReader arq = new StreamReader("CaminhosEntreCidadesMarte.txt", Encoding.UTF7);    //Criação do StreamReader responsável por ler o arquivo que contém as rotas entre as cidades, de acordo com seus códigos, e sua distância         
 
-            while(!arq.EndOfStream)                                          //Loop que ocorre até que o arquivo seja completamente lido
+            while (!arq.EndOfStream)                                          //Loop que ocorre até que o arquivo seja completamente lido
             {
                 string linha = arq.ReadLine();                               //variável que guarda todas as informações lidas na linha atual do arquivo
 
-                int origem = Convert.ToInt32(linha.Substring(0, 3));
-                int destino = Convert.ToInt32(linha.Substring(3, 3));
+                int origem = Convert.ToInt32(linha.Substring(0, 3));         //Variável que guarda o index da linha atual de acordo com as informações lidas no arquivo o esse intervalo determinado
+                int destino = Convert.ToInt32(linha.Substring(3, 3));        //Variável que guarda o index da coluna atual de acordo com as informações lidas no arquivo o esse intervalo determinado
 
-                matriz[origem, destino] = Convert.ToInt32(linha.Substring(6, 5));
+                matriz[origem, destino] = Convert.ToInt32(linha.Substring(6, 5)); //Atribuição da distância entre duas cidades à respectiva célula
             }
 
-            arq.Close();
+            arq.Close();  //Encerramento da leitura do arquivo, fechando-o
         }
 
         private void tpArvore_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
-            DesenharArvore(true, arvore.Raiz, (int)tpArvore.Width / 2, 0, Math.PI / 2, Math.PI / 2.5, 520, g);
+            Graphics g = e.Graphics;         //Atribuição do gráfico adquirido pelo parâmetro à variável grafico do tipo Graphics, responsável pela alteração do gráfico exibido ao usuário
+            DesenharArvore(true, arvore.Raiz, (int)tpArvore.Width / 2, 0, Math.PI / 2, Math.PI / 2.5, 520, g); //Chamada do método responsável por desenhar a árvore
         }
 
         private void DesenharArvore(bool primeiraVez, NoArvore<Cidade> raiz,  int x, int y, double angulo, double incremento,    double comprimento, Graphics g)
-        {
+        {//Método responsável por desenhar a árvore, usando recursão
             int xf, yf;
             if (raiz != null)
             {
@@ -271,7 +273,7 @@ namespace apCaminhosMarte
                 DesenharArvore(false, raiz.Esq, xf, yf, Math.PI / 2 + incremento,  incremento * 0.65, comprimento * 0.71, g);
                 DesenharArvore(false, raiz.Dir, xf, yf, Math.PI / 2 - incremento,  incremento * 0.65, comprimento *0.71, g);
                 SolidBrush preenchimento = new SolidBrush(Color.Black);
-                g.FillEllipse(preenchimento, xf - 60, yf - 20, 120, 110);
+                g.FillEllipse(preenchimento, xf - 60, yf - 20, 110, 105);
                 g.DrawString(Convert.ToString(raiz.Info.Nome), new Font("Century Gothic", 11), new SolidBrush(Color.White), xf - 57, yf+20);
             }
         }
@@ -315,16 +317,6 @@ namespace apCaminhosMarte
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             EscreverLinha(melhorCaminho);                                //Chamada do método responsável por exibir no mapa o melhor caminho encontrado, quando o usuário clicar em sua linha correspondente
-        }
-
-        private void pbMapa_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
+        }        
     }
 }
